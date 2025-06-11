@@ -29,3 +29,17 @@ mvn exec:java -Dexec.mainClass="com.example.App"
 говорим maven'у, чем запускать, где искать "запускаемый" класс (у которого есть метод Main)
 -Dexec передает mvn'у системаные свойства для запуска (generally)
 -Dexec.mainClass="<путь до класса>" говорит, чей Main запускать в начале
+
+---
+Пока можно затестить запросы к сервисам так:
+```
+curl -X GET http://localhost:8080/api/hello
+```
+,
+```
+curl -X GET http://localhost:8081/orders/hello
+```
+`
+```
+curl -X GET http://localhost:8082/payments/hello
+```

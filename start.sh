@@ -2,6 +2,12 @@
 
 echo "Starting the application..."
 
+
+#тут install нужен, чтобы mvn добавил модели в локальный репозиторий
+cd ./Common_Models && mvn clean install
+echo "Common Models built successfully."
+cd ..
+
 cd ./API_Gateway && mvn clean package 
 # & (в конце строки) чтобы запустить процесс в фоновом режиме
 # nohup позволяет процессу продолжать работать даже после закрытия терминала
