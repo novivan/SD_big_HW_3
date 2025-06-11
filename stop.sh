@@ -27,3 +27,9 @@ stop_service "Orders Microservice" 8081
 stop_service "Payments Microservice" 8082
 
 echo "All microservices stopped successfully."
+
+# Остановка RabbitMQ
+echo "Stopping RabbitMQ..."
+brew services stop rabbitmq
+echo "RabbitMQ stooped successfully."
+
