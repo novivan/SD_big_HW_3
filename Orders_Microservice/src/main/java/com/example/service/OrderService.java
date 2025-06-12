@@ -3,10 +3,12 @@ package com.example.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.example.Good;
 import com.example.Order;
 import com.example.OrderStatus;
+import com.example.messaging.MessageSchema;
 import com.example.outbox.OutboxMessage;
 import com.example.outbox.OutboxService;
 import com.example.repository.OrderRepository;
@@ -38,19 +40,25 @@ public class OrderService {
         
         orderRepository.save(order);
         
-        Map<String, Object> paymentRequest = Map.of(
-                "orderId", order.getId(),
-                "userId", order.getUserId(),
-                "amount", order.getTotalPrice(),
-                "transactionId", order.getTransactionId()
+        // Создаем запрос на оплату, используя схему сообщений
+        MessageSchema.PaymentRequest paymentRequest = new MessageSchema.PaymentRequest(
+            order.getId(),
+            order.getUserId(),
+            order.getTotalPrice(),
+            order.getTransactionId()
         );
         
+        // Добавляем уникальный messageId
+        paymentRequest.messageId = UUID.randomUUID().toString();
+        
+        // Преобразуем в JSON и сохраняем в Outbox
         String payload = gson.toJson(paymentRequest);
         OutboxMessage outboxMessage = new OutboxMessage(
                 String.valueOf(order.getId()),
                 "Order",
                 "ORDER_CREATED",
-                payload
+                payload,
+                paymentRequest.messageId // Сохраняем messageId в outbox сообщении
         );
         
         outboxService.saveMessage(outboxMessage);
@@ -67,6 +75,14 @@ public class OrderService {
     }
     
     public boolean updateOrderStatus(int orderId, OrderStatus status) {
-        return orderRepository.UpdateStatus(orderId, status);
+        // Используем правильный метод с camelCase именованием
+        boolean updated = orderRepository.updateStatus(orderId, status);
+        
+        if (updated) {
+            // Можно добавить дополнительную логику для уведомления пользователя
+            System.out.println("Order status updated to " + status + " for order " + orderId);
+        }
+        
+        return updated;
     }
 }

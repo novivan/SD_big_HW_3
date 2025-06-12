@@ -12,6 +12,7 @@ public class OutboxMessage {
     private final String aggregateType;
     private final String eventType;
     private final String payload;
+    private final String messageId; // Добавляем поле для messageId
     private final LocalDateTime createdAt;
     private boolean processed;
     private LocalDateTime processedAt;
@@ -22,6 +23,19 @@ public class OutboxMessage {
         this.aggregateType = aggregateType;
         this.eventType = eventType;
         this.payload = payload;
+        this.messageId = UUID.randomUUID().toString(); // Генерируем новый messageId
+        this.createdAt = LocalDateTime.now();
+        this.processed = false;
+    }
+    
+    public OutboxMessage(String aggregateId, String aggregateType, String eventType, 
+                         String payload, String messageId) {
+        this.id = UUID.randomUUID().toString();
+        this.aggregateId = aggregateId;
+        this.aggregateType = aggregateType;
+        this.eventType = eventType;
+        this.payload = payload;
+        this.messageId = messageId; // Используем предоставленный messageId
         this.createdAt = LocalDateTime.now();
         this.processed = false;
     }
@@ -30,11 +44,11 @@ public class OutboxMessage {
         return id;
     }
 
-    public String getAggregateIg() {
+    public String getAggregateId() {
         return aggregateId;
     }
 
-    public String getAggregatedType() {
+    public String getAggregateType() {
         return aggregateType;
     }
 
@@ -44,6 +58,10 @@ public class OutboxMessage {
 
     public String getPayload() {
         return payload;
+    }
+    
+    public String getMessageId() {
+        return messageId;
     }
 
     public LocalDateTime getCreatedAt() {

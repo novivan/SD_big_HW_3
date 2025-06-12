@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.example.messaging.MessageBroker;
+import com.example.messaging.MessageSchema;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,8 +15,6 @@ import com.google.gson.JsonParser;
  * Сервис для обработки исходящих сообщений с поддержкой messageId
  */
 public class OutboxService {
-    private static final String ORDER_PAYMENT_RESULT_QUEUE = "order_payment_results";
-    
     private final OutboxRepository outboxRepository;
     private final MessageBroker messageBroker;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -49,7 +48,7 @@ public class OutboxService {
                 // Определение очереди в зависимости от типа события
                 String queueName = null;
                 if ("PAYMENT_RESULT".equals(message.getEventType())) {
-                    queueName = ORDER_PAYMENT_RESULT_QUEUE;
+                    queueName = MessageSchema.ORDER_PAYMENT_RESULTS_QUEUE;
                 }
                 
                 if (queueName != null) {
@@ -80,6 +79,18 @@ public class OutboxService {
             // Проверяем наличие messageId
             if (!jsonPayload.has("messageId")) {
                 jsonPayload.addProperty("messageId", message.getMessageId());
+            }
+            
+            // Проверяем наличие eventType
+            if (!jsonPayload.has("eventType")) {
+                // Определяем тип события в зависимости от наличия поля success
+                if (jsonPayload.has("success")) {
+                    boolean success = jsonPayload.get("success").getAsBoolean();
+                    String eventType = success ? 
+                        MessageSchema.PaymentResultType.PAYMENT_COMPLETED : 
+                        MessageSchema.PaymentResultType.PAYMENT_FAILED;
+                    jsonPayload.addProperty("eventType", eventType);
+                }
             }
             
             return gson.toJson(jsonPayload);

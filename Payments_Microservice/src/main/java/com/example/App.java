@@ -8,6 +8,7 @@ import com.example.controller.AccountController;
 import com.example.inbox.InboxRepository;
 import com.example.inbox.InboxService;
 import com.example.messaging.MessageBroker;
+import com.example.messaging.MessageSchema;
 import com.example.outbox.OutboxRepository;
 import com.example.outbox.OutboxService;
 import com.example.repository.AccountRepository;
@@ -23,7 +24,6 @@ import static spark.Spark.port;
 import static spark.Spark.post;
 
 public class App {
-    private static final String PAYMENT_REQUEST_QUEUE = "payment_requests";
     private static MessageBroker messageBroker;
     private static InboxService inboxService;
     private static OutboxService outboxService;
@@ -103,12 +103,15 @@ public class App {
             return gson.toJson(errorResponse);
         });
         
-        // Запускаем прослушивание очереди платежных запросов
+        // Запускаем прослушивание очереди платежных запросов с использованием константы из схемы
         try {
-            messageBroker.receiveMessages(PAYMENT_REQUEST_QUEUE, message -> {
+            messageBroker.receiveMessages(MessageSchema.PAYMENT_REQUESTS_QUEUE, message -> {
                 System.out.println("Received payment request: " + message);
                 inboxService.processMessage(message);
             });
+            
+            System.out.println("Started listening for payment requests on queue: " 
+                + MessageSchema.PAYMENT_REQUESTS_QUEUE);
         } catch (IOException e) {
             System.err.println("Failed to set up message consumer: " + e.getMessage());
             e.printStackTrace();

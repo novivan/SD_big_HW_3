@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.example.Order;
+import com.example.OrderStatus;
 
 /**
  * In-memory orders' storage.
@@ -37,11 +38,18 @@ public class OrderRepository {
                 .collect(Collectors.toList());
     }
 
-    public boolean UpdateStatus(int orderId, com.example.OrderStatus newStatus) {
+    // Обновлено: переименовано с UpdateStatus на updateStatus (camelCase)
+    public boolean updateStatus(int orderId, OrderStatus newStatus) {
         if (orders.containsKey(orderId)) {
             orders.get(orderId).setStatus(newStatus);
             return true;
         }
         return false;
-    } 
+    }
+    
+    // Для обратной совместимости оставим старый метод, 
+    // который вызывает новый (для случая если где-то используется старое название)
+    public boolean UpdateStatus(int orderId, OrderStatus newStatus) {
+        return updateStatus(orderId, newStatus);
+    }
 }
