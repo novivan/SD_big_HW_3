@@ -46,6 +46,7 @@ public class App {
             messageBroker.connect();
         } catch (Exception e) {
             System.err.println("Failed to connect to message broker: " + e.getMessage());
+            e.printStackTrace();
             return;
         }
         
@@ -72,11 +73,25 @@ public class App {
         get("/accounts/:userId/balance", accountController.getGetBalance());
         post("/accounts/:userId/deposit", accountController.getDepositFunds());
         
+        // Добавляем эндпоинт для проверки состояния сервиса
+        get("/payments/health", (req, res) -> {
+            res.type("application/json");
+            Map<String, Object> health = new HashMap<>();
+            health.put("status", "UP");
+            health.put("timestamp", System.currentTimeMillis());
+            return gson.toJson(health);
+        });
+        
         // Обработка ошибок
         exception(Exception.class, (e, request, response) -> {
+            e.printStackTrace();
             response.status(500);
             response.type("application/json");
-            response.body(gson.toJson(Map.of("error", e.getMessage())));
+            response.body(gson.toJson(Map.of(
+                "error", e.getMessage(),
+                "type", e.getClass().getName(),
+                "timestamp", System.currentTimeMillis()
+            )));
         });
         
         notFound((req, res) -> {
@@ -84,6 +99,7 @@ public class App {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Not found");
             errorResponse.put("path", req.pathInfo());
+            errorResponse.put("timestamp", System.currentTimeMillis());
             return gson.toJson(errorResponse);
         });
         
@@ -95,6 +111,7 @@ public class App {
             });
         } catch (IOException e) {
             System.err.println("Failed to set up message consumer: " + e.getMessage());
+            e.printStackTrace();
         }
         
         // Корректное завершение работы
@@ -104,6 +121,7 @@ public class App {
                 messageBroker.close();
             } catch (IOException e) {
                 System.err.println("Error closing message broker: " + e.getMessage());
+                e.printStackTrace();
             }
         }));
         

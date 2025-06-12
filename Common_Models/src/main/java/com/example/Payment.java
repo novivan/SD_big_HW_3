@@ -8,7 +8,7 @@ public class Payment {
 
     private final int id;
     private final int orderId;
-    private final String transactionId; //UUID для транзакций
+    private String transactionId; // Изменено с final на изменяемое
     private final double amount;
     private PaymentStatus status;
     private final LocalDateTime createdAt;
@@ -21,7 +21,7 @@ public class Payment {
 
         this.id = ++lastId;
         this.orderId = orderId;
-        this.transactionId = UUID.randomUUID().toString();
+        this.transactionId = UUID.randomUUID().toString(); // Генерируем по умолчанию
         this.amount = amount;
         this.status = PaymentStatus.PENDING;
         this.createdAt = LocalDateTime.now();
@@ -37,6 +37,11 @@ public class Payment {
 
     public String getTransactionId() {
         return transactionId;
+    }
+    
+    // Добавлен setter для transactionId
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public double getAmount() {

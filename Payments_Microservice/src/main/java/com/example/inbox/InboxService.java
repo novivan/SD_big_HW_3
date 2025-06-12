@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * Сервис для обработки входящих сообщений
+ * Сервис для обработки входящих сообщений с поддержкой идемпотентности
  */
 public class InboxService {
     private final InboxRepository inboxRepository;
@@ -18,24 +18,33 @@ public class InboxService {
     }
     
     /**
-     * Обработать входящее сообщение из очереди
+     * Обработать входящее сообщение из очереди с гарантией идемпотентности
      */
     public void processMessage(String payload) {
         try {
             // Парсим JSON сообщение
             JsonObject jsonObject = gson.fromJson(payload, JsonObject.class);
             
-            // Извлекаем transactionId для идемпотентности
-            String transactionId = jsonObject.get("transactionId").getAsString();
+            // Извлекаем messageId для дедупликации
+            String messageId;
+            if (jsonObject.has("messageId")) {
+                messageId = jsonObject.get("messageId").getAsString();
+            } else {
+                // Если messageId не предоставлен, используем transactionId как запасной вариант
+                messageId = jsonObject.get("transactionId").getAsString();
+            }
             
-            // Проверяем, было ли это сообщение уже обработано
-            if (inboxRepository.isProcessed(transactionId)) {
-                System.out.println("Message with transactionId " + transactionId + " already processed. Skipping.");
+            // Проверяем, было ли это сообщение уже обработано (дедупликация)
+            if (inboxRepository.existsById(messageId)) {
+                System.out.println("Message with ID " + messageId + " already processed. Skipping.");
                 return;
             }
             
-            // Сохраняем сообщение в Inbox
-            InboxMessage inboxMessage = new InboxMessage("PAYMENT_REQUEST", payload, transactionId);
+            // Извлекаем transactionId для идемпотентного обновления
+            String transactionId = jsonObject.get("transactionId").getAsString();
+            
+            // Сохраняем сообщение в Inbox перед обработкой
+            InboxMessage inboxMessage = new InboxMessage(messageId, "PAYMENT_REQUEST", payload, transactionId);
             inboxRepository.save(inboxMessage);
             
             // Обрабатываем платеж
@@ -43,6 +52,7 @@ public class InboxService {
             int userId = jsonObject.get("userId").getAsInt();
             double amount = jsonObject.get("amount").getAsDouble();
             
+            // Идемпотентная обработка
             boolean success = paymentService.processPayment(orderId, userId, amount, transactionId);
             
             // Отмечаем сообщение как обработанное
@@ -51,6 +61,7 @@ public class InboxService {
             System.out.println("Payment processed for order " + orderId + ", result: " + (success ? "success" : "failed"));
         } catch (Exception e) {
             System.err.println("Error processing incoming message: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

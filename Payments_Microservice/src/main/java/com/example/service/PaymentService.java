@@ -1,9 +1,5 @@
 package com.example.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.example.Payment;
 import com.example.PaymentStatus;
 import com.example.outbox.OutboxMessage;
@@ -11,8 +7,13 @@ import com.example.outbox.OutboxService;
 import com.example.repository.PaymentRepository;
 import com.google.gson.Gson;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 /**
- * Сервис для обработки платежей
+ * Сервис для обработки платежей с гарантией exactly-once семантики
  */
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -30,7 +31,7 @@ public class PaymentService {
     }
     
     /**
-     * Обработать платеж
+     * Обработать платеж с гарантией идемпотентности
      * @param orderId ID заказа
      * @param userId ID пользователя
      * @param amount Сумма платежа
@@ -42,12 +43,15 @@ public class PaymentService {
         Optional<Payment> existingPayment = paymentRepository.findByTransactionId(transactionId);
         if (existingPayment.isPresent()) {
             // Если платеж уже обрабатывался, возвращаем результат предыдущей обработки
-            return existingPayment.get().getStatus() == PaymentStatus.COMPLETED;
+            Payment payment = existingPayment.get();
+            System.out.println("Payment with transactionId " + transactionId + " already processed. Status: " + payment.getStatus());
+            return payment.getStatus() == PaymentStatus.COMPLETED;
         }
         
         try {
             // Создаем запись о платеже в статусе PENDING
             Payment payment = new Payment(orderId, amount);
+            payment.setTransactionId(transactionId); // Устанавливаем переданный transactionId вместо генерации нового
             paymentRepository.save(payment);
             
             // Проверяем наличие счета у пользователя
@@ -86,6 +90,7 @@ public class PaymentService {
             }
         } catch (Exception e) {
             System.err.println("Error processing payment: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -94,11 +99,16 @@ public class PaymentService {
      * Отправить сообщение о результате платежа через Outbox
      */
     private void sendPaymentResultMessage(Payment payment, boolean success) {
+        // Создаем уникальный messageId для исходящего сообщения
+        String messageId = UUID.randomUUID().toString();
+        
         Map<String, Object> paymentResult = Map.of(
+                "messageId", messageId, // Добавляем messageId в сообщение
                 "orderId", payment.getOrderId(),
                 "amount", payment.getAmount(),
                 "transactionId", payment.getTransactionId(),
-                "success", success
+                "success", success,
+                "timestamp", System.currentTimeMillis()
         );
         
         String payload = gson.toJson(paymentResult);
@@ -107,7 +117,8 @@ public class PaymentService {
                 "Payment",
                 "PAYMENT_RESULT",
                 payload,
-                payment.getTransactionId()
+                payment.getTransactionId(),
+                messageId // Устанавливаем messageId
         );
         
         outboxService.saveMessage(outboxMessage);

@@ -1,10 +1,9 @@
 package com.example.inbox;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
- * Сообщение во входящей очереди (Inbox)
+ * Сообщение во входящей очереди (Inbox) с поддержкой идемпотентности
  */
 public class InboxMessage {
     private final String id;
@@ -15,8 +14,8 @@ public class InboxMessage {
     private boolean processed;
     private LocalDateTime processedAt;
     
-    public InboxMessage(String messageType, String payload, String transactionId) {
-        this.id = UUID.randomUUID().toString();
+    public InboxMessage(String id, String messageType, String payload, String transactionId) {
+        this.id = id;
         this.messageType = messageType;
         this.payload = payload;
         this.transactionId = transactionId;

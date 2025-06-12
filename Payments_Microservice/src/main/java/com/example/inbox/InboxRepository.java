@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Репозиторий для хранения входящих сообщений
+ * Репозиторий для хранения входящих сообщений с дедупликацией
  */
 public class InboxRepository {
     private final Map<String, InboxMessage> messages = new ConcurrentHashMap<>();
@@ -24,6 +24,13 @@ public class InboxRepository {
      */
     public Optional<InboxMessage> findById(String id) {
         return Optional.ofNullable(messages.get(id));
+    }
+    
+    /**
+     * Проверить существование сообщения по ID
+     */
+    public boolean existsById(String id) {
+        return messages.containsKey(id);
     }
     
     /**

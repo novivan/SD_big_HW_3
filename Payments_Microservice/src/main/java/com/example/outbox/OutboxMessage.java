@@ -4,14 +4,15 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Сообщение в очереди Outbox
+ * Сообщение в очереди Outbox с поддержкой уникальных идентификаторов
  */
 public class OutboxMessage {
-    private final String id;
+    private final String id; // Внутренний ID для хранения
     private final String aggregateType;
     private final String eventType;
     private final String payload;
-    private final String correlationId;
+    private final String correlationId; // TransactionId
+    private final String messageId; // Уникальный ID сообщения
     private final LocalDateTime createdAt;
     private boolean processed;
     private LocalDateTime processedAt;
@@ -22,6 +23,18 @@ public class OutboxMessage {
         this.eventType = eventType;
         this.payload = payload;
         this.correlationId = correlationId;
+        this.messageId = UUID.randomUUID().toString(); // Генерируем новый messageId
+        this.createdAt = LocalDateTime.now();
+        this.processed = false;
+    }
+    
+    public OutboxMessage(String aggregateType, String eventType, String payload, String correlationId, String messageId) {
+        this.id = UUID.randomUUID().toString();
+        this.aggregateType = aggregateType;
+        this.eventType = eventType;
+        this.payload = payload;
+        this.correlationId = correlationId;
+        this.messageId = messageId; // Используем предоставленный messageId
         this.createdAt = LocalDateTime.now();
         this.processed = false;
     }
@@ -45,6 +58,10 @@ public class OutboxMessage {
     
     public String getCorrelationId() {
         return correlationId;
+    }
+    
+    public String getMessageId() {
+        return messageId;
     }
     
     public LocalDateTime getCreatedAt() {

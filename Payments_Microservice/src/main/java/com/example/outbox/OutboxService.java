@@ -6,9 +6,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.example.messaging.MessageBroker;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
- * Сервис для обработки исходящих сообщений
+ * Сервис для обработки исходящих сообщений с поддержкой messageId
  */
 public class OutboxService {
     private static final String ORDER_PAYMENT_RESULT_QUEUE = "order_payment_results";
@@ -16,6 +19,7 @@ public class OutboxService {
     private final OutboxRepository outboxRepository;
     private final MessageBroker messageBroker;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final Gson gson = new Gson();
     
     public OutboxService(OutboxRepository outboxRepository, MessageBroker messageBroker) {
         this.outboxRepository = outboxRepository;
@@ -33,7 +37,7 @@ public class OutboxService {
      * Запустить обработку исходящих сообщений
      */
     public void startProcessing() {
-        scheduler.scheduleAtFixedRate(this::processOutboxMessages, 0, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::processOutboxMessages, 0, 3, TimeUnit.SECONDS);
     }
     
     /**
@@ -49,14 +53,41 @@ public class OutboxService {
                 }
                 
                 if (queueName != null) {
-                    messageBroker.sendMessage(queueName, message.getPayload());
+                    // Убеждаемся, что в payload есть messageId
+                    String payload = ensureMessageIdInPayload(message);
+                    
+                    // Отправляем сообщение
+                    messageBroker.sendMessage(queueName, payload);
                     outboxRepository.markAsProcessed(message.getId());
-                    System.out.println("Successfully processed outbox message: " + message.getId());
+                    System.out.println("Successfully processed outbox message: " + message.getId() + 
+                                     ", messageId: " + message.getMessageId() +
+                                     ", correlationId: " + message.getCorrelationId());
                 }
             } catch (IOException e) {
                 System.err.println("Error processing outbox message: " + e.getMessage());
             }
         });
+    }
+    
+    /**
+     * Убедиться, что в payload есть messageId для идентификации сообщений
+     */
+    private String ensureMessageIdInPayload(OutboxMessage message) {
+        try {
+            // Парсим JSON строку
+            JsonObject jsonPayload = JsonParser.parseString(message.getPayload()).getAsJsonObject();
+            
+            // Проверяем наличие messageId
+            if (!jsonPayload.has("messageId")) {
+                jsonPayload.addProperty("messageId", message.getMessageId());
+            }
+            
+            return gson.toJson(jsonPayload);
+        } catch (Exception e) {
+            // В случае проблем с парсингом, возвращаем исходный payload
+            System.err.println("Error ensuring messageId in payload: " + e.getMessage());
+            return message.getPayload();
+        }
     }
     
     /**
