@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -89,6 +90,21 @@ public class OrderServiceTest {
     }
 
     @Test
+    public void testGetOrderById_NotFound() {
+        // Подготовка данных
+        int orderId = 999;
+        
+        // Настройка моков
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+        
+        // Вызов тестируемого метода
+        Optional<Order> result = orderService.getOrderById(orderId);
+        
+        // Проверки
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
     public void testGetUserOrders() {
         // Подготовка данных
         int userId = 1;
@@ -126,5 +142,50 @@ public class OrderServiceTest {
         // Проверки
         assertTrue(result);
         verify(orderRepository).updateStatus(orderId, newStatus);
+    }
+
+    @Test
+    public void testUpdateOrderStatus_NotFound() {
+        // Подготовка данных
+        int orderId = 999;
+        OrderStatus newStatus = OrderStatus.PAID;
+        
+        // Настройка моков
+        when(orderRepository.updateStatus(orderId, newStatus)).thenReturn(false);
+        
+        // Вызов тестируемого метода
+        boolean result = orderService.updateOrderStatus(orderId, newStatus);
+        
+        // Проверки
+        assertFalse(result);
+    }
+    
+    @Test
+    public void testCalculateTotalPrice() {
+        // Подготовка данных
+        List<Map<String, Object>> items = new ArrayList<>();
+        
+        Map<String, Object> item1 = new HashMap<>();
+        item1.put("price", 10.0);
+        item1.put("quantity", 2);
+        items.add(item1);
+        
+        Map<String, Object> item2 = new HashMap<>();
+        item2.put("price", 15.0);
+        item2.put("quantity", 3);
+        items.add(item2);
+        
+        // Create a test order and manually add the items
+        Order order = new Order(1);
+        
+        // Instead of using reflection to access a private method, we'll test
+        // the logic through the createOrder method which internally calculates the total price
+        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+        
+        // Executing the method that will calculate the total price
+        Order result = orderService.createOrder(1, items);
+        
+        // Verify the total price calculation
+        assertEquals(65.0, result.getTotalPrice(), 0.001);
     }
 }

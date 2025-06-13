@@ -212,4 +212,54 @@ public class AccountServiceTest {
         // Вызов тестируемого метода - должен выбросить исключение
         accountService.getBalance(userId);
     }
+
+    @Test(timeout = 1000)
+    public void testHasAccount_Exists() {
+        // Подготовка данных
+        int userId = 1;
+        
+        // Настройка моков - используем existsByUserId вместо findByUserId
+        when(accountRepository.existsByUserId(userId)).thenReturn(true);
+        
+        // Вызов тестируемого метода
+        boolean result = accountService.hasAccount(userId);
+        
+        // Проверки
+        assertTrue(result);
+        verify(accountRepository).existsByUserId(userId);
+    }
+    
+    @Test(timeout = 1000) 
+    public void testHasAccount_NotExists() {
+        // Подготовка данных
+        int userId = 999;
+        
+        // Настройка моков - используем existsByUserId вместо findByUserId
+        when(accountRepository.existsByUserId(userId)).thenReturn(false);
+        
+        // Вызов тестируемого метода
+        boolean result = accountService.hasAccount(userId);
+        
+        // Проверки
+        assertFalse(result);
+        verify(accountRepository).existsByUserId(userId);
+    }
+    
+    @Test(timeout = 1000)
+    public void testGetAccount() {
+        // Подготовка данных
+        int userId = 1;
+        Account account = new Account(userId);
+        account.deposit(200.0);
+        
+        // Настройка моков
+        when(accountRepository.findByUserId(userId)).thenReturn(Optional.of(account));
+        
+        // Вызов тестируемого метода - использовать getBalance вместо findByUserId
+        double balance = accountService.getBalance(userId);
+        
+        // Проверки
+        assertEquals(200.0, balance, 0.001);
+        verify(accountRepository).findByUserId(userId);
+    }
 }
