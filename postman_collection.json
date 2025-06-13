@@ -1,0 +1,323 @@
+{
+  "info": {
+    "_postman_id": "5e7c36af-12c0-48ad-bb64-61df3b71a5ca",
+    "name": "E-Commerce Microservices",
+    "description": "Collection for testing the e-commerce microservices system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "API Gateway",
+      "item": [
+        {
+          "name": "Hello Gateway",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/hello",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "hello"
+              ]
+            },
+            "description": "Check if the API Gateway is running"
+          },
+          "response": []
+        }
+      ],
+      "description": "API Gateway endpoints"
+    },
+    {
+      "name": "Orders Microservice",
+      "item": [
+        {
+          "name": "Hello Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/orders/hello",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "orders",
+                "hello"
+              ]
+            },
+            "description": "Check if the Orders Service is running"
+          },
+          "response": []
+        },
+        {
+          "name": "Orders Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/orders/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "orders",
+                "health"
+              ]
+            },
+            "description": "Check Orders Service health"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"name\": \"T-shirt\",\n            \"price\": 19.99,\n            \"description\": \"Summer collection cotton T-shirt\",\n            \"quantity\": 2\n        },\n        {\n            \"name\": \"Jeans\",\n            \"price\": 49.99,\n            \"description\": \"Classic blue jeans\",\n            \"quantity\": 1\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Create a new order"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/orders/1?userId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "orders",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get order details by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/users/1/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "users",
+                "1",
+                "orders"
+              ]
+            },
+            "description": "Get all orders for a specific user"
+          },
+          "response": []
+        },
+        {
+          "name": "Handle Payment Result",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderId\": 1,\n    \"success\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/orders/payment-result",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "orders",
+                "payment-result"
+              ]
+            },
+            "description": "Manually update order status based on payment result"
+          },
+          "response": []
+        }
+      ],
+      "description": "Orders Microservice endpoints"
+    },
+    {
+      "name": "Payments Microservice",
+      "item": [
+        {
+          "name": "Hello Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/payments/hello",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "payments",
+                "hello"
+              ]
+            },
+            "description": "Check if the Payments Service is running"
+          },
+          "response": []
+        },
+        {
+          "name": "Payments Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/payments/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "payments",
+                "health"
+              ]
+            },
+            "description": "Check Payments Service health"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/accounts",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "accounts"
+              ]
+            },
+            "description": "Create a new account for a user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/accounts/1/balance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "accounts",
+                "1",
+                "balance"
+              ]
+            },
+            "description": "Get account balance for a user"
+          },
+          "response": []
+        },
+        {
+          "name": "Deposit Funds",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 100.00\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/accounts/1/deposit",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8082",
+              "path": [
+                "accounts",
+                "1",
+                "deposit"
+              ]
+            },
+            "description": "Deposit funds to a user's account"
+          },
+          "response": []
+        }
+      ],
+      "description": "Payments Microservice endpoints"
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  title: Payments Microservice API
+  description: API for managing user accounts and payments in the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082
+    description: Local development server
+paths:
+  /payments/hello:
+    get:
+      summary: Check if the service is running
+      description: Simple endpoint to verify that the Payments Microservice is up and running
+      responses:
+        '200':
+          description: Service is up and running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello from Payments Microservice!"
+  /payments/health:
+    get:
+      summary: Check service health
+      description: Provides health status of the Payments Microservice
+      responses:
+        '200':
+          description: Service health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "UP"
+                  timestamp:
+                    type: integer
+                    format: int64
+                    example: 1623456789123
+  /accounts:
+    post:
+      summary: Create a new account
+      description: Creates a new account for a user (maximum one account per user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: integer
+                  description: ID of the user for whom to create an account
+            example:
+              userId: 1
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                    description: Unique identifier of the created account
+                    example: "acc-123-456"
+                  userId:
+                    type: integer
+                    description: ID of the user owning this account
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    description: Initial balance of the account
+                    example: 0.0
+        '400':
+          description: Bad request - invalid input or account already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User already has an account"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+  /accounts/{userId}/balance:
+    get:
+      summary: Get account balance
+      description: Retrieve the current balance of a user's account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose account balance to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Account balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    example: 120.50
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Account not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+  /accounts/{userId}/deposit:
+    post:
+      summary: Deposit funds to account
+      description: Add funds to a user's account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose account to deposit to
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  format: double
+                  description: Amount to deposit
+            example:
+              amount: 50.00
+      responses:
+        '200':
+          description: Funds deposited successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                    example: "acc-123-456"
+                  userId:
+                    type: integer
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    example: 170.50
+                  depositAmount:
+                    type: number
+                    format: double
+                    example: 50.00
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Deposit amount must be positive"
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Account not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the account
+        userId:
+          type: integer
+          description: ID of the user owning this account
+        balance:
+          type: number
+          format: double
+          description: Current balance of the account
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message

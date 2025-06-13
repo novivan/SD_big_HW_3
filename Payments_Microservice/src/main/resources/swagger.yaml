@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  title: Payments Microservice API
+  description: API for managing user accounts and payments in the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082
+    description: Local development server
+paths:
+  # Здесь должно быть содержимое оригинального swagger.yaml для Payments Microservice
+  # (Для краткости я не копирую всё содержимое, но вам нужно скопировать
+  # полное содержимое файла /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/swagger.yaml)

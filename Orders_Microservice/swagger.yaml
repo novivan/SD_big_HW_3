@@ -1,0 +1,307 @@
+openapi: 3.0.0
+info:
+  title: Orders Microservice API
+  description: API for creating and managing orders in the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+paths:
+  /orders/hello:
+    get:
+      summary: Check if the service is running
+      description: Simple endpoint to verify that the Orders Microservice is up and running
+      responses:
+        '200':
+          description: Service is up and running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello from Orders Microservice!"
+  /orders/health:
+    get:
+      summary: Check service health
+      description: Provides health status of the Orders Microservice
+      responses:
+        '200':
+          description: Service health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "UP"
+                  timestamp:
+                    type: integer
+                    format: int64
+                    example: 1623456789123
+  /orders:
+    post:
+      summary: Create a new order
+      description: Creates a new order for a specific user with listed items and initiates the payment process asynchronously
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              userId: 1
+              items:
+                - name: "T-shirt"
+                  price: 19.99
+                  description: "Summer collection cotton T-shirt"
+                  quantity: 2
+                - name: "Jeans"
+                  price: 49.99
+                  description: "Classic blue jeans"
+                  quantity: 1
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    example: 101
+                  status:
+                    type: string
+                    example: "PENDING"
+                  totalPrice:
+                    type: number
+                    format: double
+                    example: 89.97
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid request format"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to create order"
+  /orders/{orderId}:
+    get:
+      summary: Get order details
+      description: Retrieve details of a specific order by ID
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to retrieve
+          schema:
+            type: integer
+            example: 101
+        - name: userId
+          in: query
+          required: true
+          description: ID of the user requesting the order (for authorization)
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '403':
+          description: User not authorized to view this order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "You are not authorized to view this order"
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Order not found"
+  /users/{userId}/orders:
+    get:
+      summary: Get all orders for a user
+      description: Retrieve a list of orders for a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose orders to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: User's orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                          example: 101
+                        status:
+                          type: string
+                          example: "PENDING"
+                        totalPrice:
+                          type: number
+                          format: double
+                          example: 89.97
+                        createdAt:
+                          type: string
+                          example: "abc-123-def-456"
+        '400':
+          description: Bad request - invalid user ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid user ID format"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve orders"
+  /orders/payment-result:
+    post:
+      summary: Handle payment result
+      description: Process payment result and update order status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: integer
+                  example: 101
+                success:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Payment result processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Order not found"
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing required fields"
+components:
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - userId
+        - items
+      properties:
+        userId:
+          type: integer
+          description: ID of the user creating the order
+        items:
+          type: array
+          description: List of items in the order
+          items:
+            type: object
+            required:
+              - name
+              - price
+              - description
+              - quantity
+            properties:
+              name:
+                type: string
+                description: Name of the product
+              price:
+                type: number
+                format: double
+                description: Price per unit
+              description:
+                type: string
+                description: Product description
+              quantity:
+                type: integer
+                description: Quantity of the product
+    OrderDetails:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          description: ID of the order
+        status:
+          type: string
+          description: Current status of the order (PENDING, PAID, FAILED)
+        totalPrice:
+          type: number
+          format: double
+          description: Total price of the order
+        items:
+          type: array
+          description: Items in the order
+          items:
+            type: object
+            properties:
+              good:
+                type: object
+                properties:
+                  price:
+                    type: number
+                    format: double
+                  name:
+                    type: string
+                  description:
+                    type: string
+              quantity:
+                type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message

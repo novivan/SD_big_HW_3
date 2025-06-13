@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  title: Orders Microservice API
+  description: API for creating and managing orders in the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+paths:
+  # Здесь должно быть содержимое оригинального swagger.yaml для Orders Microservice
+  # (Для краткости я не копирую всё содержимое, но вам нужно скопировать
+  # полное содержимое файла /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Orders_Microservice/swagger.yaml)

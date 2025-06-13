@@ -1,0 +1,324 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce System API
+  description: Complete API documentation for the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: API Gateway
+  - url: http://localhost:8081
+    description: Direct access to Orders Microservice
+  - url: http://localhost:8082
+    description: Direct access to Payments Microservice
+paths:
+  /api/hello:
+    get:
+      summary: Check if the gateway is running
+      description: Simple endpoint to verify that the API Gateway is up and running
+      responses:
+        '200':
+          description: Gateway is up and running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello from API Gateway!"
+  # Order Service endpoints
+  /api/orders:
+    post:
+      summary: Create a new order
+      description: Creates a new order for a specific user with listed items and initiates the payment process asynchronously
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              userId: 1
+              items:
+                - name: "T-shirt"
+                  price: 19.99
+                  description: "Summer collection cotton T-shirt"
+                  quantity: 2
+                - name: "Jeans"
+                  price: 49.99
+                  description: "Classic blue jeans"
+                  quantity: 1
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    example: 101
+                  status:
+                    type: string
+                    example: "PENDING"
+                  totalPrice:
+                    type: number
+                    format: double
+                    example: 89.97
+  /api/orders/{orderId}:
+    get:
+      summary: Get order details
+      description: Retrieve details of a specific order by ID
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to retrieve
+          schema:
+            type: integer
+            example: 101
+        - name: userId
+          in: query
+          required: true
+          description: ID of the user requesting the order (for authorization)
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+  /api/users/{userId}/orders:
+    get:
+      summary: Get all orders for a user
+      description: Retrieve a list of orders for a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose orders to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: User's orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: integer
+                          example: 101
+                        status:
+                          type: string
+                          example: "PENDING"
+                        totalPrice:
+                          type: number
+                          format: double
+                          example: 89.97
+                        createdAt:
+                          type: string
+                          example: "abc-123-def-456"
+  # Payment Service endpoints
+  /api/accounts:
+    post:
+      summary: Create a new account
+      description: Creates a new account for a user (maximum one account per user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: integer
+                  description: ID of the user for whom to create an account
+            example:
+              userId: 1
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                    description: Unique identifier of the created account
+                    example: "acc-123-456"
+                  userId:
+                    type: integer
+                    description: ID of the user owning this account
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    description: Initial balance of the account
+                    example: 0.0
+  /api/accounts/{userId}/balance:
+    get:
+      summary: Get account balance
+      description: Retrieve the current balance of a user's account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose account balance to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Account balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    example: 120.50
+  /api/accounts/{userId}/deposit:
+    post:
+      summary: Deposit funds to account
+      description: Add funds to a user's account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose account to deposit to
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  format: double
+                  description: Amount to deposit
+            example:
+              amount: 50.00
+      responses:
+        '200':
+          description: Funds deposited successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                    example: "acc-123-456"
+                  userId:
+                    type: integer
+                    example: 1
+                  balance:
+                    type: number
+                    format: double
+                    example: 170.50
+                  depositAmount:
+                    type: number
+                    format: double
+                    example: 50.00
+components:
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - userId
+        - items
+      properties:
+        userId:
+          type: integer
+          description: ID of the user creating the order
+        items:
+          type: array
+          description: List of items in the order
+          items:
+            type: object
+            required:
+              - name
+              - price
+              - description
+              - quantity
+            properties:
+              name:
+                type: string
+                description: Name of the product
+              price:
+                type: number
+                format: double
+                description: Price per unit
+              description:
+                type: string
+                description: Product description
+              quantity:
+                type: integer
+                description: Quantity of the product
+    OrderDetails:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          description: ID of the order
+        status:
+          type: string
+          description: Current status of the order (PENDING, PAID, FAILED)
+        totalPrice:
+          type: number
+          format: double
+          description: Total price of the order
+        items:
+          type: array
+          description: Items in the order
+          items:
+            type: object
+            properties:
+              good:
+                type: object
+                properties:
+                  price:
+                    type: number
+                    format: double
+                  name:
+                    type: string
+                  description:
+                    type: string
+              quantity:
+                type: integer
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the account
+        userId:
+          type: integer
+          description: ID of the user owning this account
+        balance:
+          type: number
+          format: double
+          description: Current balance of the account

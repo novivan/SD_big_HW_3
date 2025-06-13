@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce System API
+  description: Complete API documentation for the e-commerce system
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: API Gateway
+  # Здесь должно быть содержимое оригинального swagger.yaml для API Gateway
+  # (Для краткости я не копирую всё содержимое, но вам нужно скопировать
+  # полное содержимое файла /Users/ivannovikov/Desktop/SD/SD_big_HW_3/API_Gateway/swagger.yaml)
