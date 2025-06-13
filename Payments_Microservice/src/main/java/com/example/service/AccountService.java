@@ -20,7 +20,8 @@ public class AccountService {
      */
     public Account createAccount(int userId) {
         // Проверка, что у пользователя еще нет счета
-        if (accountRepository.existsByUserId(userId)) {
+        Optional<Account> existingAccount = accountRepository.findByUserId(userId);
+        if (existingAccount.isPresent()) {
             throw new IllegalStateException("Account for user " + userId + " already exists");
         }
         
@@ -38,7 +39,8 @@ public class AccountService {
         // Атомарное пополнение счета
         account.deposit(amount);
         
-        return account;
+        // Сохраняем обновленный счет
+        return accountRepository.save(account);
     }
     
     /**
@@ -48,7 +50,14 @@ public class AccountService {
         Account account = getAccountByUserId(userId);
         
         // Атомарное списание средств с проверкой достаточности
-        return account.withdraw(amount);
+        boolean success = account.withdraw(amount);
+        
+        // Если списание успешно, сохраняем обновление
+        if (success) {
+            accountRepository.save(account);
+        }
+        
+        return success;
     }
     
     /**

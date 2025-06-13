@@ -7,11 +7,27 @@
   <version>1.0-SNAPSHOT</version>
   <name>Orders_Microservice</name>
   <url>http://maven.apache.org</url>
+  
+  <properties>
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
   <dependencies>
+    <!-- Обновляем зависимость JUnit на более новую версию -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Добавляем Mockito для тестирования -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.12.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
