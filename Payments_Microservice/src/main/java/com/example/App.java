@@ -72,9 +72,9 @@ public class App {
         get("/payments/hello", (req, res) -> "Hello from Payments Microservice!");
         
         // Эндпоинты для работы со счетами
-        post("/accounts", accountController.getCreateAccount());
-        get("/accounts/:userId/balance", accountController.getGetBalance());
-        post("/accounts/:userId/deposit", accountController.getDepositFunds());
+        post("/payments/accounts", accountController.getCreateAccount());
+        get("/payments/accounts/:userId/balance", accountController.getGetBalance());
+        post("/payments/accounts/:userId/deposit", accountController.getDepositFunds());
         
         // Добавляем эндпоинт для проверки состояния сервиса
         get("/payments/health", (req, res) -> {

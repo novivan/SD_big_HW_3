@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./API_Gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - orders-service
+      - payments-service
+
+  orders-service:
+    build: ./Orders_Microservice
+    ports:
+      - "8081:8081"
+    depends_on:
+      - payments-service
+
+  payments-service:
+    build: ./Payments_Microservice
+    ports:
+      - "8082:8082"
+
+  frontend-service:
+    build: ./Frontend_Service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - api-gateway 

@@ -79,6 +79,7 @@ run_tests_and_show_results() {
 run_tests_and_show_results "API_Gateway"
 run_tests_and_show_results "Orders_Microservice"
 run_tests_and_show_results "Payments_Microservice"
+run_tests_and_show_results "Frontend_Service"
 
 echo "All tests completed. JaCoCo reports generated."
 
@@ -114,4 +115,11 @@ nohup mvn exec:java -Dexec.mainClass="com.example.App" > /dev/null 2>&1 &
 cd ..
 echo "Payments Microservice started successfully."
 
+cd ./Frontend_Service && mvn clean package -DskipTests
+nohup mvn spring-boot:run > /dev/null 2>&1 &
+cd ..
+echo "Frontend Service started successfully."
+
 echo "All services are now running!"
+echo "Frontend is available at: http://localhost:8083"
+echo "API Gateway is available at: http://localhost:8080"

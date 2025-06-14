@@ -70,9 +70,9 @@ public class App {
         get("/orders/hello", (req, res) -> "Hello from Orders Microservice!");
         
         // API endpoints
-        post("/orders", orderController.getCreateOrder());
-        get("/orders/:orderId", orderController.getGetOrder());
-        get("/users/:userId/orders", orderController.getGetUserOrders());
+        post("/orders/orders", orderController.getCreateOrder());
+        get("/orders/orders/:orderId", orderController.getGetOrder());
+        get("/orders/users/:userId/orders", orderController.getGetUserOrders());
         
         post("/orders/payment-result", orderController.getHandlePaymentResult());
         
