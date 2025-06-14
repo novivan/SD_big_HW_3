@@ -133,35 +133,39 @@ public class App {
         
         // Создадим директорию для статических файлов, если она не существует
         try {
-            Files.createDirectories(Paths.get("/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/src/main/resources/static/swagger-ui"));
+            Files.createDirectories(Paths.get("src/main/resources/static/swagger-ui"));
         } catch (IOException e) {
             System.err.println("Failed to create static directories: " + e.getMessage());
         }
-        
-        // Настройка статических файлов для Swagger UI
-        // ВАЖНО: Удаляем этот код, так как он конфликтует
-        // staticFiles.externalLocation("/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/src/main/resources/static");
         
         // Предоставление swagger.yaml
         get("/swagger.yaml", (req, res) -> {
             res.type("application/yaml");
             try {
-                return Files.readString(Paths.get("/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/swagger.yaml"));
+                String yamlContent = Files.readString(Paths.get("swagger.yaml"));
+                System.out.println("Successfully loaded swagger.yaml");
+                return yamlContent;
             } catch (IOException e) {
+                System.err.println("Failed to load swagger.yaml: " + e.getMessage());
+                e.printStackTrace();
                 res.status(404);
                 return "Swagger YAML file not found";
             }
         });
 
-        // Страница Swagger UI с прямым указанием URL для swagger.yaml
+        // Страница Swagger UI
         get("/docs", (req, res) -> {
             res.type("text/html");
-            return "<!DOCTYPE html>\n" +
+            String html = "<!DOCTYPE html>\n" +
                    "<html lang=\"en\">\n" +
                    "<head>\n" +
                    "    <meta charset=\"UTF-8\">\n" +
                    "    <title>Payments API Documentation</title>\n" +
                    "    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css\">\n" +
+                   "    <style>\n" +
+                   "        body { margin: 0; padding: 0; }\n" +
+                   "        #swagger-ui { max-width: 1200px; margin: 0 auto; }\n" +
+                   "    </style>\n" +
                    "</head>\n" +
                    "<body>\n" +
                    "    <div id=\"swagger-ui\"></div>\n" +
@@ -169,23 +173,45 @@ public class App {
                    "    <script src=\"https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js\"></script>\n" +
                    "    <script>\n" +
                    "        window.onload = function() {\n" +
+                   "            console.log('Initializing Swagger UI...');\n" +
                    "            window.ui = SwaggerUIBundle({\n" +
-                   "                url: \"http://localhost:8082/swagger.yaml\",\n" +
+                   "                url: window.location.origin + '/swagger.yaml',\n" +
                    "                dom_id: '#swagger-ui',\n" +
+                   "                deepLinking: true,\n" +
                    "                presets: [\n" +
                    "                    SwaggerUIBundle.presets.apis,\n" +
                    "                    SwaggerUIStandalonePreset\n" +
                    "                ],\n" +
-                   "                layout: \"StandaloneLayout\"\n" +
+                   "                plugins: [\n" +
+                   "                    SwaggerUIBundle.plugins.DownloadUrl\n" +
+                   "                ],\n" +
+                   "                layout: \"StandaloneLayout\",\n" +
+                   "                onComplete: function() {\n" +
+                   "                    console.log('Swagger UI initialization complete');\n" +
+                   "                }\n" +
                    "            });\n" +
                    "        };\n" +
                    "    </script>\n" +
                    "</body>\n" +
                    "</html>";
+            System.out.println("Serving Swagger UI HTML");
+            return html;
         });
 
         // Редирект с корневого маршрута
         get("/", (req, res) -> {
+            res.redirect("/docs");
+            return null;
+        });
+
+        // Альтернативный путь к Swagger UI
+        get("/swagger-ui", (req, res) -> {
+            res.redirect("/docs");
+            return null;
+        });
+
+        // Альтернативный путь к Swagger UI
+        get("/swagger", (req, res) -> {
             res.redirect("/docs");
             return null;
         });
