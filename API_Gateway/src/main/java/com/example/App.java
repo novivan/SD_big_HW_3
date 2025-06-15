@@ -107,15 +107,6 @@ public class App
         // Order endpoints
         // Создание заказа
         post("/api/orders", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-            res.header("Access-Control-Allow-Headers", "Content-Type");
-            
-            if (req.requestMethod().equals("OPTIONS")) {
-                res.status(200);
-                return "";
-            }
-            
             try {
                 HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(ORDERS_SERVICE_URL + "/api/orders"))
@@ -136,10 +127,6 @@ public class App
 
         // Получение заказов пользователя
         get("/api/users/:userId/orders", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-            res.header("Access-Control-Allow-Headers", "Content-Type");
-            
             try {
                 String userId = req.params(":userId");
                 HttpRequest request = HttpRequest.newBuilder()
@@ -160,10 +147,6 @@ public class App
 
         // Получение деталей заказа
         get("/api/orders/:orderId", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-            res.header("Access-Control-Allow-Headers", "Content-Type");
-            
             try {
                 String orderId = req.params(":orderId");
                 String userId = req.queryParams("userId");
