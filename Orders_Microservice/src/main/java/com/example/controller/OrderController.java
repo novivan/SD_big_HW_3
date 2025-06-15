@@ -77,6 +77,7 @@ public class OrderController {
                     orderData.put("status", order.getStatus().toString());
                     orderData.put("totalPrice", order.getTotalPrice());
                     orderData.put("items", order.getItems());
+                    orderData.put("createdAt", order.getCreatedAt().toString());
                     
                     return gson.toJson(orderData);
                 } else {

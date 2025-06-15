@@ -246,6 +246,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="mb-0">Статус: ${data.status}</p>
                         <p class="mb-0">Сумма: ${data.totalPrice} руб.</p>
                         <p class="mb-0">Дата создания: ${new Date(data.createdAt).toLocaleDateString('ru-RU')}</p>
+                        
+                        <h6 class="mt-3">Товары в заказе:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Цена</th>
+                                        <th>Описание</th>
+                                        <th>Количество</th>
+                                        <th>Сумма</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.items.map(item => `
+                                        <tr>
+                                            <td>${item.good.Name}</td>
+                                            <td>${item.good.Price} руб.</td>
+                                            <td>${item.good.Description}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${(item.good.Price * item.quantity).toFixed(2)} руб.</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 `;
             } else {
