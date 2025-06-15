@@ -32,7 +32,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Создание заказа</h5>
-                        <form id="createOrderForm">
+                        <form id="createOrderForm" onsubmit="return false;">
                             <div class="mb-3">
                                 <label for="orderUserId" class="form-label">ID пользователя</label>
                                 <input type="number" class="form-control" id="orderUserId" required>
@@ -75,7 +75,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Мои заказы</h5>
-                        <form id="listOrdersForm">
+                        <form id="listOrdersForm" onsubmit="return false;">
                             <div class="mb-3">
                                 <label for="listOrdersUserId" class="form-label">ID пользователя</label>
                                 <input type="number" class="form-control" id="listOrdersUserId" required>
@@ -93,7 +93,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Статус заказа</h5>
-                        <form id="orderStatusForm">
+                        <form id="orderStatusForm" onsubmit="return false;">
                             <div class="mb-3">
                                 <label for="orderId" class="form-label">ID заказа</label>
                                 <input type="number" class="form-control" id="orderId" required>
@@ -112,6 +112,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="/js/orders.js"></script>
 </body>
 </html> 

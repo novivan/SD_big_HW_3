@@ -118,7 +118,7 @@ public class App
             
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(ORDERS_SERVICE_URL + "/orders/orders"))
+                    .uri(URI.create(ORDERS_SERVICE_URL + "/api/orders"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(req.body()))
                     .build();
@@ -143,7 +143,7 @@ public class App
             try {
                 String userId = req.params(":userId");
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(ORDERS_SERVICE_URL + "/orders/users/" + userId + "/orders"))
+                    .uri(URI.create(ORDERS_SERVICE_URL + "/api/users/" + userId + "/orders"))
                     .GET()
                     .build();
 
@@ -169,7 +169,7 @@ public class App
                 String userId = req.queryParams("userId");
                 
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(ORDERS_SERVICE_URL + "/orders/orders/" + orderId + "?userId=" + userId))
+                    .uri(URI.create(ORDERS_SERVICE_URL + "/api/orders/" + orderId + "?userId=" + userId))
                     .GET()
                     .build();
 

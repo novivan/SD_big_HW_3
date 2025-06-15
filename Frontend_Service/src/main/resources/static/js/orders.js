@@ -1,38 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const API_BASE_URL = 'http://localhost:8080/api';
-    let stompClient = null;
-
-    // Подключение к WebSocket
-    function connectWebSocket() {
-        const socket = new SockJS('http://localhost:8080/ws');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function(frame) {
-            console.log('Connected to WebSocket');
-            stompClient.subscribe('/topic/orders', function(message) {
-                const orderUpdate = JSON.parse(message.body);
-                showOrderNotification(orderUpdate);
-            });
-        });
-    }
-
-    // Показать уведомление об изменении статуса заказа
-    function showOrderNotification(orderUpdate) {
-        const notification = new Notification('Обновление статуса заказа', {
-            body: `Заказ #${orderUpdate.orderId}: ${orderUpdate.status}`,
-            icon: '/images/logo.png'
-        });
-    }
-
-    // Запрос разрешения на показ уведомлений
-    if (Notification.permission !== 'granted') {
-        Notification.requestPermission();
-    }
-
-    // Подключение к WebSocket при загрузке страницы
-    connectWebSocket();
 
     // Добавление нового товара в форму
-    document.getElementById('addItem').addEventListener('click', function() {
+    function addItemBlock() {
         const container = document.getElementById('itemsContainer');
         const newItem = document.createElement('div');
         newItem.className = 'item-entry mb-3';
@@ -56,12 +26,21 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         container.appendChild(newItem);
+    }
+
+    // Обработчик кнопки "Добавить товар"
+    document.getElementById('addItem').addEventListener('click', function() {
+        addItemBlock();
     });
 
     // Удаление товара из формы
     document.getElementById('itemsContainer').addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-item')) {
             e.target.closest('.item-entry').remove();
+            // Если не осталось ни одного товара, добавляем новый
+            if (document.querySelectorAll('.item-entry').length === 0) {
+                addItemBlock();
+            }
         }
     });
 
@@ -81,25 +60,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Проверяем, что есть хотя бы один товар
-        const items = Array.from(document.querySelectorAll('.item-entry')).map(entry => {
-            const inputs = entry.querySelectorAll('input');
-            const name = inputs[0].value.trim();
-            const price = parseFloat(inputs[1].value);
-            const description = inputs[2].value.trim();
-            const quantity = parseInt(inputs[3].value);
-
-            if (!name || isNaN(price) || !description || isNaN(quantity)) {
-                throw new Error('Все поля должны быть заполнены корректно');
-            }
-
-            return {
-                name: name,
-                price: price,
-                description: description,
-                quantity: quantity
-            };
-        });
-
+        const itemBlocks = Array.from(document.querySelectorAll('.item-entry'));
+        if (itemBlocks.length === 0) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <p class="mb-0">Добавьте хотя бы один товар в заказ</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let items = [];
+        try {
+            items = itemBlocks.map(entry => {
+                const inputs = entry.querySelectorAll('input');
+                const name = inputs[0].value.trim();
+                const price = parseFloat(inputs[1].value);
+                const description = inputs[2].value.trim();
+                const quantity = parseInt(inputs[3].value);
+                
+                if (!name || isNaN(price) || !description || isNaN(quantity)) {
+                    throw new Error('Все поля должны быть заполнены корректно');
+                }
+                
+                return {
+                    name: name,
+                    price: price,
+                    description: description,
+                    quantity: quantity
+                };
+            });
+        } catch (err) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <p class="mb-0">${err.message}</p>
+                </div>
+            `;
+            return;
+        }
+        
         if (items.length === 0) {
             resultDiv.innerHTML = `
                 <div class="alert alert-danger">
@@ -108,13 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
-
+        
         try {
-            console.log('Отправка запроса на создание заказа:', {
-                userId: parseInt(userId),
-                items: items
-            });
-
             const response = await fetch(`${API_BASE_URL}/orders`, {
                 method: 'POST',
                 headers: {
@@ -125,23 +119,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     items: items
                 })
             });
-
-            console.log('Получен ответ:', response.status);
-
+            
             if (response.ok) {
                 const result = await response.json();
-                console.log('Результат:', result);
                 resultDiv.innerHTML = `
                     <div class="alert alert-success">
                         <p class="mb-0">Заказ успешно создан! ID заказа: ${result.orderId}</p>
                     </div>
                 `;
+                
                 // Очищаем форму
                 document.getElementById('createOrderForm').reset();
                 document.getElementById('itemsContainer').innerHTML = '';
+                addItemBlock();
             } else {
                 const error = await response.json();
-                console.error('Ошибка:', error);
                 resultDiv.innerHTML = `
                     <div class="alert alert-danger">
                         <p class="mb-0">Ошибка: ${error.error || 'Не удалось создать заказ'}</p>
@@ -149,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
         } catch (error) {
-            console.error('Ошибка при создании заказа:', error);
             resultDiv.innerHTML = `
                 <div class="alert alert-danger">
                     <p class="mb-0">Ошибка при создании заказа: ${error.message}</p>
@@ -174,15 +165,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            console.log('Отправка запроса на получение заказов для пользователя:', userId);
-
             const response = await fetch(`${API_BASE_URL}/users/${userId}/orders`);
             
-            console.log('Получен ответ:', response.status);
-
             if (response.ok) {
                 const data = await response.json();
-                console.log('Получены заказы:', data);
 
                 if (data.orders && data.orders.length > 0) {
                     ordersList.innerHTML = `
@@ -202,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <td>${order.orderId}</td>
                                             <td>${order.status}</td>
                                             <td>${order.totalPrice} руб.</td>
-                                            <td>${new Date(order.transactionId).toLocaleString()}</td>
+                                            <td>${new Date(order.createdAt).toLocaleString()}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -218,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 const error = await response.json();
-                console.error('Ошибка:', error);
                 ordersList.innerHTML = `
                     <div class="alert alert-danger">
                         <p class="mb-0">Ошибка: ${error.error || 'Не удалось получить список заказов'}</p>
@@ -226,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
         } catch (error) {
-            console.error('Ошибка при получении списка заказов:', error);
             ordersList.innerHTML = `
                 <div class="alert alert-danger">
                     <p class="mb-0">Ошибка при получении списка заказов: ${error.message}</p>
@@ -252,26 +236,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            console.log('Отправка запроса на получение статуса заказа:', { orderId, userId });
-
             const response = await fetch(`${API_BASE_URL}/orders/${orderId}?userId=${userId}`);
             
-            console.log('Получен ответ:', response.status);
-
             if (response.ok) {
                 const data = await response.json();
-                console.log('Получен статус заказа:', data);
                 orderStatus.innerHTML = `
                     <div class="alert alert-info">
                         <h6>Статус заказа #${data.orderId}:</h6>
                         <p class="mb-0">${data.status}</p>
                         <p class="mb-0">Сумма: ${data.totalPrice} руб.</p>
-                        <p class="mb-0">Дата создания: ${new Date(data.transactionId).toLocaleString()}</p>
+                        <p class="mb-0">Дата создания: ${new Date(data.createdAt).toLocaleString()}</p>
                     </div>
                 `;
             } else {
                 const error = await response.json();
-                console.error('Ошибка:', error);
                 orderStatus.innerHTML = `
                     <div class="alert alert-danger">
                         <p class="mb-0">Ошибка: ${error.error || 'Не удалось получить статус заказа'}</p>
@@ -279,7 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
         } catch (error) {
-            console.error('Ошибка при получении статуса заказа:', error);
             orderStatus.innerHTML = `
                 <div class="alert alert-danger">
                     <p class="mb-0">Ошибка при получении статуса заказа: ${error.message}</p>

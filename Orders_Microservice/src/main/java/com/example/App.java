@@ -67,17 +67,17 @@ public class App {
             e.printStackTrace();
         }
         
-        get("/orders/hello", (req, res) -> "Hello from Orders Microservice!");
+        get("/api/orders/hello", (req, res) -> "Hello from Orders Microservice!");
         
         // API endpoints
-        post("/orders/orders", orderController.getCreateOrder());
-        get("/orders/orders/:orderId", orderController.getGetOrder());
-        get("/orders/users/:userId/orders", orderController.getGetUserOrders());
+        post("/api/orders", orderController.getCreateOrder());
+        get("/api/orders/:orderId", orderController.getGetOrder());
+        get("/api/users/:userId/orders", orderController.getGetUserOrders());
         
-        post("/orders/payment-result", orderController.getHandlePaymentResult());
+        post("/api/orders/payment-result", orderController.getHandlePaymentResult());
         
         // Добавляем эндпоинт для проверки состояния сервиса
-        get("/orders/health", (req, res) -> {
+        get("/api/orders/health", (req, res) -> {
             res.type("application/json");
             Map<String, Object> health = new HashMap<>();
             health.put("status", "UP");
