@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <td>${order.orderId}</td>
                                             <td>${order.status}</td>
                                             <td>${order.totalPrice} руб.</td>
-                                            <td>${new Date(order.createdAt).toLocaleString()}</td>
+                                            <td>${new Date(order.createdAt).toLocaleDateString('ru-RU')}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -243,9 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 orderStatus.innerHTML = `
                     <div class="alert alert-info">
                         <h6>Статус заказа #${data.orderId}:</h6>
-                        <p class="mb-0">${data.status}</p>
+                        <p class="mb-0">Статус: ${data.status}</p>
                         <p class="mb-0">Сумма: ${data.totalPrice} руб.</p>
-                        <p class="mb-0">Дата создания: ${new Date(data.createdAt).toLocaleString()}</p>
+                        <p class="mb-0">Дата создания: ${new Date(data.createdAt).toLocaleDateString('ru-RU')}</p>
                     </div>
                 `;
             } else {

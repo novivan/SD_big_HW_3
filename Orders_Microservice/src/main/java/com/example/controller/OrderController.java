@@ -107,7 +107,7 @@ public class OrderController {
                         orderMap.put("orderId", order.getId());
                         orderMap.put("status", order.getStatus().toString());
                         orderMap.put("totalPrice", order.getTotalPrice());
-                        orderMap.put("createdAt", order.getTransactionId());
+                        orderMap.put("createdAt", order.getCreatedAt().toString());
                         return orderMap;
                     })
                     .collect(Collectors.toList());

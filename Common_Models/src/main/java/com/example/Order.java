@@ -1,5 +1,6 @@
 package com.example;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Order {
     private final int userId;
     private final String transactionId;
     private OrderStatus status;
+    private final LocalDateTime createdAt;
 
     private final List<OrderItem> items;
     private double totalPrice;
@@ -24,6 +26,7 @@ public class Order {
         this.status = OrderStatus.CREATED;
         this.items = new ArrayList<>();
         this.totalPrice = 0.0;
+        this.createdAt = LocalDateTime.now();
     }
 
     public int getId() {
@@ -52,6 +55,10 @@ public class Order {
 
     public double getTotalPrice() {
         return totalPrice;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public void addItem(Good good, int quantity) {
