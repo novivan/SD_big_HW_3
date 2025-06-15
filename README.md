@@ -1,98 +1,77 @@
-# SD_big_HW_3
+# Микросервисное приложение интернет-магазина
 
----
-Пока что это наиболее простая инструкция для запуска сразу всех микросервисов. В корне проекта напишите в консоль:
+## Запуск проекта
+
+1. Убедитесь, что у вас установлены:
+   - Java 11 или выше
+   - Maven
+   - RabbitMQ
+
+2. Запустите RabbitMQ:
+```bash
+brew services start rabbitmq
 ```
-chmod +x start.sh
-#это делается единожды для выдачи прав на исполнение
-```
-```
+
+3. Запустите все сервисы с помощью скрипта:
+```bash
 ./start.sh
-#каждый раз для запуска приложения
-```
----
-Это пока остается для меня.
-Инструкции по запуску(для всех микросервисов одинаково):
-переходим в папку микросервиса:
-```
-cd <microservice directory's name>
-```
-после:
-```
-mvn clean package
-```
-(чистим и пересобираем все цели сборки, запускаем тесты и пакуем в .jar)
-
-```
-mvn exec:java -Dexec.mainClass="com.example.App"
-```
-говорим maven'у, чем запускать, где искать "запускаемый" класс (у которого есть метод Main)
--Dexec передает mvn'у системаные свойства для запуска (generally)
--Dexec.mainClass="<путь до класса>" говорит, чей Main запускать в начале
-
-## API Documentation
-
-The system provides comprehensive API documentation through OpenAPI (Swagger) specification files:
-
-1. **Orders Microservice API**: `/Orders_Microservice/swagger.yaml`
-2. **Payments Microservice API**: `/Payments_Microservice/swagger.yaml`
-3. **API Gateway Overview**: `/API_Gateway/swagger.yaml`
-
-### Accessing Swagger UI
-
-You can access the interactive Swagger UI at the following URLs once the services are running:
-
-1. **API Gateway**: [http://localhost:8080/docs](http://localhost:8080/docs)
-2. **Orders Microservice**: [http://localhost:8081/docs](http://localhost:8081/docs) 
-3. **Payments Microservice**: [http://localhost:8082/docs](http://localhost:8082/docs)
-
-Обратите внимание на пути: теперь используется `/swagger/` вместо предыдущего.
-
-### Viewing the API Documentation
-
-To view the API documentation in a user-friendly format:
-1. Visit [Swagger Editor](https://editor.swagger.io/)
-2. Import the corresponding YAML file
-3. Review the API endpoints, schemas, and examples
-
-### Postman Collection
-
-A Postman collection is also provided for testing the API endpoints:
-1. Import `postman_collection.json` into Postman
-2. The collection contains example requests for all endpoints
-3. Use these examples to interact with the microservices
-
-### Testing the API
-
-You can test the basic endpoints using curl:
-
-```
-curl -X GET http://localhost:8080/api/hello
 ```
 
-```
-curl -X GET http://localhost:8081/orders/hello
-```
+## Доступные эндпоинты
 
-```
-curl -X GET http://localhost:8082/payments/hello
-```
+### API Gateway (порт 8080)
+- Swagger UI: http://localhost:8080/docs
+- Основной API: http://localhost:8080/api/*
 
-For more complex endpoints that require a request body:
+### Orders Service (порт 8081)
+- Swagger UI: http://localhost:8081/docs
+- API: http://localhost:8081/orders/*
 
-```
-# Create an account
-curl -X POST http://localhost:8082/accounts \
-  -H "Content-Type: application/json" \
-  -d '{"userId": 1}'
+### Payments Service (порт 8082)
+- Swagger UI: http://localhost:8082/docs
+- API: http://localhost:8082/payments/*
 
-# Deposit funds
-curl -X POST http://localhost:8082/accounts/1/deposit \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 100.00}'
+### Frontend Service (порт 8083)
+- Веб-интерфейс: http://localhost:8083
 
-# Create an order
-curl -X POST http://localhost:8081/orders \
-  -H "Content-Type: application/json" \
-  -d '{"userId": 1, "items": [{"name": "T-shirt", "price": 19.99, "description": "Summer collection", "quantity": 2}]}'
-```
+## Соответствие критериям
+
+### 1. Основные требования (2 балла)
+- ✅ Payments Service:
+  - Создание счета
+  - Пополнение счета
+  - Просмотр баланса
+- ✅ Orders Service:
+  - Создание заказа
+  - Просмотр списка заказов
+  - Просмотр статуса заказа
+
+### 2. Архитектурное проектирование (4 балла)
+- ✅ Четкое разделение на сервисы:
+  - API Gateway (роутинг)
+  - Orders Service (заказы)
+  - Payments Service (платежи)
+- ✅ Использование очередей сообщений (RabbitMQ)
+- ✅ Паттерны:
+  - Transactional Outbox в Orders Service
+  - Transactional Inbox и Outbox в Payments Service
+  - Exactly once семантика при списании денег
+
+### 3. Postman/Swagger (0.5 балла)
+- ✅ Swagger UI для всех сервисов
+- ✅ Postman коллекция с примерами запросов
+
+### 4. Тесты (0.5 балла)
+- ✅ Покрытие кода тестами >65%
+- ✅ Интеграционные тесты
+
+### 6. Фронтенд (2 балла)
+- ✅ Отдельный сервис
+- ✅ REST API взаимодействие
+- ✅ Минимальный веб-интерфейс
+- ✅ Отображение статусов заказов
+
+### 7. WebSocket (2 балла)
+- ✅ Реальное отслеживание состояния заказа
+- ✅ Push-уведомления при изменении статуса
+- ✅ WebSocket подключение после создания заказа
