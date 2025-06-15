@@ -39,6 +39,11 @@ public class PaymentService {
      * @return true если платеж успешен, false если платеж не удался
      */
     public boolean processPayment(int orderId, int userId, double amount, String transactionId) {
+        System.out.println("Starting payment processing for order " + orderId + 
+                         ", user " + userId + 
+                         ", amount " + amount + 
+                         ", transactionId " + transactionId);
+        
         // Проверка на повторную обработку платежа (идемпотентность)
         Optional<Payment> existingPayment = paymentRepository.findByTransactionId(transactionId);
         if (existingPayment.isPresent()) {
@@ -53,6 +58,7 @@ public class PaymentService {
             Payment payment = new Payment(orderId, amount);
             payment.setTransactionId(transactionId); // Устанавливаем переданный transactionId вместо генерации нового
             paymentRepository.save(payment);
+            System.out.println("Created new payment record with ID: " + payment.getId());
             
             String failureReason = null;
             boolean success = false;
@@ -63,7 +69,9 @@ public class PaymentService {
                 payment.setStatus(PaymentStatus.FAILED);
                 paymentRepository.save(payment);
                 failureReason = "Account not found for user " + userId;
+                System.out.println("Payment failed: " + failureReason);
             } else {
+                System.out.println("Found account for user " + userId + ", attempting to withdraw " + amount);
                 // Пытаемся списать средства со счета
                 success = accountService.withdrawFunds(userId, amount);
                 
@@ -71,15 +79,18 @@ public class PaymentService {
                     // Успешное списание средств
                     payment.setStatus(PaymentStatus.COMPLETED);
                     paymentRepository.save(payment);
+                    System.out.println("Successfully withdrew " + amount + " from user " + userId + "'s account");
                 } else {
                     // Недостаточно средств или другая ошибка списания
                     payment.setStatus(PaymentStatus.FAILED);
                     paymentRepository.save(payment);
                     failureReason = "Insufficient funds";
+                    System.out.println("Payment failed: " + failureReason);
                 }
             }
             
             // Отправляем результат в Order Service через Outbox
+            System.out.println("Sending payment result to Order Service. Success: " + success);
             sendPaymentResultMessage(payment, success, failureReason);
             
             return success;

@@ -47,14 +47,19 @@ public class AccountService {
      * Списать средства со счета пользователя
      */
     public boolean withdrawFunds(int userId, double amount) {
+        System.out.println("Attempting to withdraw " + amount + " from user " + userId + "'s account");
         Account account = getAccountByUserId(userId);
+        System.out.println("Current balance before withdrawal: " + account.getBalance());
         
         // Атомарное списание средств с проверкой достаточности
         boolean success = account.withdraw(amount);
         
         // Если списание успешно, сохраняем обновление
         if (success) {
+            System.out.println("Withdrawal successful. New balance: " + account.getBalance());
             accountRepository.save(account);
+        } else {
+            System.out.println("Withdrawal failed. Insufficient funds. Current balance: " + account.getBalance());
         }
         
         return success;

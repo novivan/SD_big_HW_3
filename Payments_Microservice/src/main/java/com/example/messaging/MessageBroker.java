@@ -2,9 +2,7 @@ package com.example.messaging;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -44,48 +42,16 @@ public class MessageBroker {
      * Отправка сообщения с гарантированной доставкой и идемпотентностью
      */
     public void sendMessage(String queueName, String message) throws IOException {
-        // Проверяем, есть ли messageId в сообщении
-        String messageId = extractMessageId(message);
-        if (messageId == null) {
-            // Если нет, то добавляем свой messageId
-            messageId = UUID.randomUUID().toString();
-            message = addMessageId(message, messageId);
-        }
-        
-        // Проверка, не отправляли ли мы это сообщение недавно
-        if (sentMessages.containsKey(messageId)) {
-            long lastSent = sentMessages.get(messageId);
-            if (System.currentTimeMillis() - lastSent < 60000) { // 1 минута
-                System.out.println("Skipping duplicate message send: " + messageId);
-                return;
-            }
-        }
-        
-        // Объявляем очередь с поддержкой долговечности
+        System.out.println("Declaring queue: " + queueName);
         channel.queueDeclare(queueName, true, false, false, null);
-        
-        // Установка свойств сообщения
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("messageId", messageId);
         
         AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
                 .deliveryMode(2) // persistent
-                .messageId(messageId) // Установка messageId в свойствах сообщения
-                .headers(headers)
                 .build();
         
-        // Отправка сообщения
+        System.out.println("Sending message to queue " + queueName + ": " + message);
         channel.basicPublish("", queueName, properties, message.getBytes(StandardCharsets.UTF_8));
-        
-        // Запоминаем, что это сообщение было отправлено
-        sentMessages.put(messageId, System.currentTimeMillis());
-        
-        // Ограничиваем размер кэша
-        if (sentMessages.size() > 1000) {
-            cleanupSentMessages();
-        }
-        
-        System.out.println(" [x] Sent '" + message + "' with messageId '" + messageId + "' to queue '" + queueName + "'");
+        System.out.println(" [x] Sent '" + message + "' to queue '" + queueName + "'");
     }
     
     /**
@@ -93,6 +59,7 @@ public class MessageBroker {
      */
     public void receiveMessages(String queueName, Consumer<String> messageHandler) throws IOException {
         try {
+            System.out.println("Declaring queue for receiving: " + queueName);
             channel.queueDeclare(queueName, true, false, false, null);
             
             channel.basicQos(1);
@@ -100,23 +67,20 @@ public class MessageBroker {
             System.out.println(" [*] Waiting for messages from queue '" + queueName + "'");
             
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String messageId = delivery.getProperties().getMessageId();
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
                 
                 try {
-                    System.out.println(" [x] Received message with ID '" + messageId + "' from queue '" + queueName + "'");
+                    System.out.println(" [x] Received '" + message + "' from queue '" + queueName + "'");
                     messageHandler.accept(message);
                     
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    System.out.println("Message acknowledged");
                 } catch (Exception e) {
                     System.err.println("Error processing message: " + e.getMessage());
-                    e.printStackTrace();
                     
                     try {
-                        // Отправляем NACK с requeue=false при критической ошибке обработки
-                        // чтобы избежать цикличной обработки проблемных сообщений
-                        boolean requeue = !(e instanceof RuntimeException);
-                        channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, requeue);
+                        channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+                        System.out.println("Message nacked and requeued");
                     } catch (IOException ioException) {
                         System.err.println("Failed to nack message: " + ioException.getMessage());
                     }
@@ -124,6 +88,7 @@ public class MessageBroker {
             };
             
             channel.basicConsume(queueName, false, deliverCallback, consumerTag -> { });
+            System.out.println("Started consuming messages from queue: " + queueName);
         } catch (Exception e) {
             System.err.println("Error setting up message consumer: " + e.getMessage());
             throw new IOException("Failed to set up message consumer", e);

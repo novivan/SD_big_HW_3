@@ -1,6 +1,7 @@
 package com.example.outbox;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,17 +32,38 @@ public class OutboxService {
     }
 
     private void processOutboxMessages() {
-        outboxRepository.findUnprocessedMessages().forEach(message -> {
+        System.out.println("Checking for unprocessed messages in Outbox...");
+        List<OutboxMessage> unprocessedMessages = outboxRepository.findUnprocessedMessages();
+        System.out.println("Found " + unprocessedMessages.size() + " unprocessed messages");
+        
+        unprocessedMessages.forEach(message -> {
             try {
-                if ("ORDER_CREATED".equals(message.getEventType())) {
-                    // Убедимся, что в payload есть messageId
+                System.out.println("Processing message: " + message.getId() + 
+                                 ", eventType: " + message.getEventType() + 
+                                 ", payload: " + message.getPayload());
+                
+                // Определение очереди в зависимости от типа события
+                String queueName = null;
+                if ("PROCESS_PAYMENT".equals(message.getEventType())) {
+                    queueName = MessageSchema.PAYMENT_REQUESTS_QUEUE;
+                    System.out.println("Sending payment request to queue: " + queueName);
+                }
+                
+                if (queueName != null) {
+                    // Убеждаемся, что в payload есть messageId
                     String payload = ensureMessageIdInPayload(message);
+                    System.out.println("Sending message to queue " + queueName + " with payload: " + payload);
                     
-                    // Отправляем сообщение в очередь запросов на оплату
-                    messageBroker.sendMessage(MessageSchema.PAYMENT_REQUESTS_QUEUE, payload);
+                    // Отправляем сообщение
+                    messageBroker.sendMessage(queueName, payload);
+                    System.out.println("Successfully sent message to queue " + queueName);
+                    
                     outboxRepository.markAsProcessed(message.getId());
                     System.out.println("Successfully processed outbox message: " + message.getId() + 
-                                     ", messageId: " + message.getMessageId());
+                                     ", messageId: " + message.getMessageId() +
+                                     ", aggregateId: " + message.getAggregateId());
+                } else {
+                    System.out.println("No queue found for event type: " + message.getEventType());
                 }
             } catch (IOException e) {
                 System.err.println("Error processing outbox message: " + e.getMessage());

@@ -51,13 +51,13 @@ public class Account {
         if (amount <= 0) {
             throw new IllegalArgumentException("Withdrawal amount must be positive");
         }
-        double currentBalance;
-        do {
-            currentBalance = balance.get();
+        double oldBalance = balance.get();
+        double newBalance = balance.updateAndGet(currentBalance -> {
             if (currentBalance < amount) {
-                return false; 
+                return currentBalance;
             }
-        } while (!balance.compareAndSet(currentBalance, currentBalance - amount));
-        return true; // Списание успешно
+            return currentBalance - amount;
+        });
+        return newBalance == oldBalance - amount;
     }
 }

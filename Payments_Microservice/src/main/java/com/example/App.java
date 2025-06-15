@@ -65,6 +65,20 @@ public class App {
         // Инициализация Inbox сервиса
         inboxService = new InboxService(inboxRepository, paymentService);
         
+        // Запускаем обработку входящих сообщений
+        try {
+            messageBroker.receiveMessages(MessageSchema.PAYMENT_REQUESTS_QUEUE, message -> {
+                System.out.println("Received payment request: " + message);
+                inboxService.processMessage(message);
+            });
+            System.out.println("Started listening for payment requests on queue: " 
+                + MessageSchema.PAYMENT_REQUESTS_QUEUE);
+        } catch (IOException e) {
+            System.err.println("Failed to set up message consumer: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        
         // Инициализация контроллеров
         AccountController accountController = new AccountController(accountService);
         
@@ -105,20 +119,6 @@ public class App {
             errorResponse.put("timestamp", System.currentTimeMillis());
             return gson.toJson(errorResponse);
         });
-        
-        // Запускаем прослушивание очереди платежных запросов с использованием константы из схемы
-        try {
-            messageBroker.receiveMessages(MessageSchema.PAYMENT_REQUESTS_QUEUE, message -> {
-                System.out.println("Received payment request: " + message);
-                inboxService.processMessage(message);
-            });
-            
-            System.out.println("Started listening for payment requests on queue: " 
-                + MessageSchema.PAYMENT_REQUESTS_QUEUE);
-        } catch (IOException e) {
-            System.err.println("Failed to set up message consumer: " + e.getMessage());
-            e.printStackTrace();
-        }
         
         // Корректное завершение работы
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

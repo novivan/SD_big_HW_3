@@ -23,6 +23,8 @@ public class MessageHandler {
      */
     public void handlePaymentResult(String message) {
         try {
+            System.out.println("Received payment result message: " + message);
+            
             // Парсим и проверяем структуру сообщения
             JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
             
@@ -45,15 +47,16 @@ public class MessageHandler {
             
             // Обновляем статус заказа
             OrderStatus newStatus = paymentResult.success ? OrderStatus.PAID : OrderStatus.FAILED;
-            boolean updated = orderService.updateOrderStatus(paymentResult.orderId, newStatus);
+            System.out.println("Updating order " + paymentResult.orderId + " status to " + newStatus);
             
+            boolean updated = orderService.updateOrderStatus(paymentResult.orderId, newStatus);
             if (updated) {
-                System.out.println("Order status updated successfully for order ID: " + paymentResult.orderId);
+                System.out.println("Successfully updated order status");
                 
                 // Здесь можно добавить код для уведомления пользователя об изменении статуса заказа
                 // например, через WebSocket или другие механизмы уведомлений
             } else {
-                System.err.println("Failed to update order status for order ID: " + paymentResult.orderId);
+                System.err.println("Failed to update order status");
             }
         } catch (Exception e) {
             System.err.println("Error handling payment result: " + e.getMessage());

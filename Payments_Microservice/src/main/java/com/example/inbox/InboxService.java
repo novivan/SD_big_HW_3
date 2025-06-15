@@ -24,6 +24,8 @@ public class InboxService {
      */
     public void processMessage(String payload) {
         try {
+            System.out.println("Received message in InboxService: " + payload);
+            
             // Парсим JSON сообщение
             JsonObject jsonObject = JsonParser.parseString(payload).getAsJsonObject();
             
@@ -42,6 +44,8 @@ public class InboxService {
                 messageId = jsonObject.get("transactionId").getAsString();
             }
             
+            System.out.println("Processing message with ID: " + messageId);
+            
             // Проверяем, было ли это сообщение уже обработано (дедупликация)
             if (inboxRepository.existsById(messageId)) {
                 System.out.println("Message with ID " + messageId + " already processed. Skipping.");
@@ -57,6 +61,7 @@ public class InboxService {
                                                        payload, 
                                                        transactionId);
             inboxRepository.save(inboxMessage);
+            System.out.println("Saved message to inbox with ID: " + messageId);
             
             // Обрабатываем платеж в зависимости от типа события
             String eventType = jsonObject.get("eventType").getAsString();
@@ -66,6 +71,10 @@ public class InboxService {
                 int orderId = jsonObject.get("orderId").getAsInt();
                 int userId = jsonObject.get("userId").getAsInt();
                 double amount = jsonObject.get("amount").getAsDouble();
+                
+                System.out.println("Processing payment for order " + orderId + 
+                                 ", user " + userId + 
+                                 ", amount " + amount);
                 
                 // Идемпотентная обработка
                 boolean success = paymentService.processPayment(orderId, userId, amount, transactionId);
@@ -78,6 +87,7 @@ public class InboxService {
             
             // Отмечаем сообщение как обработанное
             inboxRepository.markAsProcessed(inboxMessage.getId());
+            System.out.println("Marked message as processed: " + messageId);
             
         } catch (Exception e) {
             System.err.println("Error processing incoming message: " + e.getMessage());

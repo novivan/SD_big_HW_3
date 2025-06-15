@@ -40,10 +40,13 @@ public class OrderRepository {
 
     // Обновлено: переименовано с UpdateStatus на updateStatus (camelCase)
     public boolean updateStatus(int orderId, OrderStatus newStatus) {
+        System.out.println("Updating order " + orderId + " status to " + newStatus);
         if (orders.containsKey(orderId)) {
             orders.get(orderId).setStatus(newStatus);
+            System.out.println("Successfully updated order status");
             return true;
         }
+        System.out.println("Order not found");
         return false;
     }
     

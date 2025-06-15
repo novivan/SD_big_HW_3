@@ -25,6 +25,7 @@ public class OrderService {
     }
     
     public Order createOrder(int userId, List<Map<String, Object>> orderItems) {
+        System.out.println("Creating order for user " + userId + " with " + orderItems.size() + " items");
         Order order = new Order(userId);
         
         for (Map<String, Object> item : orderItems) {
@@ -33,12 +34,15 @@ public class OrderService {
             String description = (String) item.get("description");
             int quantity = ((Number) item.get("quantity")).intValue();
             
+            System.out.println("Adding item to order: " + name + ", price: " + price + ", quantity: " + quantity);
+            
             Good good = new Good(price, name, description, 100); // amount_on_market=100 (условное значение)
             
             order.addItem(good, quantity);
         }
         
         orderRepository.save(order);
+        System.out.println("Order saved with ID: " + order.getId() + ", total price: " + order.getTotalPrice());
         
         // Создаем запрос на оплату, используя схему сообщений
         MessageSchema.PaymentRequest paymentRequest = new MessageSchema.PaymentRequest(
@@ -53,15 +57,18 @@ public class OrderService {
         
         // Преобразуем в JSON и сохраняем в Outbox
         String payload = gson.toJson(paymentRequest);
+        System.out.println("Creating payment request message: " + payload);
+        
         OutboxMessage outboxMessage = new OutboxMessage(
                 String.valueOf(order.getId()),
-                "Order",
-                "ORDER_CREATED",
+                "Payment",
+                "PROCESS_PAYMENT",
                 payload,
-                paymentRequest.messageId // Сохраняем messageId в outbox сообщении
+                paymentRequest.messageId
         );
         
         outboxService.saveMessage(outboxMessage);
+        System.out.println("Payment request message saved to outbox");
         
         return order;
     }
@@ -74,15 +81,8 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
     
-    public boolean updateOrderStatus(int orderId, OrderStatus status) {
-        // Используем правильный метод с camelCase именованием
-        boolean updated = orderRepository.updateStatus(orderId, status);
-        
-        if (updated) {
-            // Можно добавить дополнительную логику для уведомления пользователя
-            System.out.println("Order status updated to " + status + " for order " + orderId);
-        }
-        
-        return updated;
+    public boolean updateOrderStatus(int orderId, OrderStatus newStatus) {
+        System.out.println("Updating order " + orderId + " status to " + newStatus);
+        return orderRepository.updateStatus(orderId, newStatus);
     }
 }
