@@ -37,7 +37,12 @@ public class App {
         OrderRepository orderRepository = new OrderRepository();
         OutboxRepository outboxRepository = new OutboxRepository();
         
-        messageBroker = new MessageBroker("localhost", 5672);
+        String rabbitMQHost = System.getenv("RABBITMQ_HOST") != null ? 
+                             System.getenv("RABBITMQ_HOST") : "localhost";
+        int rabbitMQPort = System.getenv("RABBITMQ_PORT") != null ? 
+                           Integer.parseInt(System.getenv("RABBITMQ_PORT")) : 5672;
+        
+        messageBroker = new MessageBroker(rabbitMQHost, rabbitMQPort);
         try {
             messageBroker.connect();
         } catch (Exception e) {

@@ -43,8 +43,13 @@ public class App {
         InboxRepository inboxRepository = new InboxRepository();
         OutboxRepository outboxRepository = new OutboxRepository();
         
-        // Инициализация брокера сообщений
-        messageBroker = new MessageBroker("localhost", 5672);
+        // Инициализация брокера сообщений с учетом Docker-окружения
+        String rabbitMQHost = System.getenv("RABBITMQ_HOST") != null ? 
+                             System.getenv("RABBITMQ_HOST") : "localhost";
+        int rabbitMQPort = System.getenv("RABBITMQ_PORT") != null ? 
+                           Integer.parseInt(System.getenv("RABBITMQ_PORT")) : 5672;
+                           
+        messageBroker = new MessageBroker(rabbitMQHost, rabbitMQPort);
         try {
             messageBroker.connect();
         } catch (Exception e) {

@@ -1,0 +1,105 @@
+version: '3'
+
+networks:
+  microservices-network:
+    driver: bridge
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: API_Gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-network
+    environment:
+      - PAYMENTS_SERVICE_URL=http://payments-service:8082
+      - ORDERS_SERVICE_URL=http://orders-service:8081
+    depends_on:
+      - rabbitmq
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  orders-service:
+    build:
+      context: .
+      dockerfile: Orders_Microservice/Dockerfile
+    container_name: orders-service
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-network
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - rabbitmq
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/orders/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  payments-service:
+    build:
+      context: .
+      dockerfile: Payments_Microservice/Dockerfile
+    container_name: payments-service
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-network
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - rabbitmq
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/payments/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend-service:
+    build:
+      context: .
+      dockerfile: Frontend_Service/Dockerfile
+    container_name: frontend-service
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-network
+    environment:
+      - API_GATEWAY_URL=http://api-gateway:8080
+    depends_on:
+      - api-gateway
+      - orders-service
+      - payments-service
+    restart: always

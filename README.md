@@ -1,79 +1,103 @@
 # Микросервисное приложение интернет-магазина
 
-## Запуск проекта
+## Требования
 
-1. Убедитесь, что у вас установлены:
-   - Java 11 или выше
-   - Maven
-   - RabbitMQ
+Для запуска приложения вам необходимы:
+- Docker
+- Docker Compose
 
-2. Запустите все сервисы с помощью скрипта:
-```bash
-./start.sh
+## Запуск приложения с использованием Docker
+
+1. **Клонировать репозиторий:**
+```
+git clone <url-репозитория>
+cd SD_big_HW_3
 ```
 
-## Завершение работы
-
-Для корректного завершения работы всех сервисов используйте скрипт:
-```bash
-./stop.sh
+2. **Собрать и запустить приложение:**
+```
+docker-compose build
+docker-compose up -d
 ```
 
-Этот скрипт:
-- Остановит все запущенные микросервисы
-- Остановит RabbitMQ
-- Очистит временные файлы
+3. **Проверить статус сервисов:**
+```
+docker-compose ps
+```
 
-## Доступные эндпоинты
+4. **Доступ к сервисам:**
+- Frontend: http://localhost:8083
+- API Gateway: http://localhost:8080
+- Orders Service: http://localhost:8081
+- Payments Service: http://localhost:8082
+- RabbitMQ Management: http://localhost:15672 (guest/guest)
 
-### API Gateway (порт 8080)
-- Swagger UI: http://localhost:8080/docs
-- Основной API: http://localhost:8080/api/*
+## Остановка приложения
 
-### Orders Service (порт 8081)
-- Swagger UI: http://localhost:8081/docs
-- API: http://localhost:8081/orders/*
+```
+docker-compose down
+```
 
-### Payments Service (порт 8082)
-- Swagger UI: http://localhost:8082/docs
-- API: http://localhost:8082/payments/*
+## Полная пересборка приложения
 
-### Frontend Service (порт 8083)
-- Веб-интерфейс: http://localhost:8083
+Если вам нужно полностью пересобрать приложение:
+```
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
 
-## Соответствие критериям
+## Просмотр логов
 
-### 1. Основные требования
-- ✅ Payments Service:
-  - Создание счета
-  - Пополнение счета
-  - Просмотр баланса
-- ✅ Orders Service:
-  - Создание заказа
-  - Просмотр списка заказов
-  - Просмотр статуса заказа
+Просмотр логов отдельного сервиса:
+```
+docker-compose logs [service-name]
+```
 
-### 2. Архитектурное проектирование
-- ✅ Четкое разделение на сервисы:
-  - API Gateway (роутинг)
-  - Orders Service (заказы)
-  - Payments Service (платежи)
-- ✅ Использование очередей сообщений (RabbitMQ)
-- ✅ Паттерны:
-  - Transactional Outbox в Orders Service
-  - Transactional Inbox и Outbox в Payments Service
-  - Exactly once семантика при списании денег
+Например:
+```
+docker-compose logs api-gateway
+```
 
-### 3. Postman/Swagger
-- ✅ Swagger UI для всех сервисов
-- ✅ Postman коллекция с примерами запросов
+Постоянный просмотр логов:
+```
+docker-compose logs -f [service-name]
+```
 
-### 4. Тесты
-- ✅ Покрытие кода тестами >15%
-- ✅ Интеграционные тесты
+## Устранение неполадок
 
-### 6. Фронтенд
-- ✅ Отдельный сервис
-- ✅ REST API взаимодействие
-- ✅ Минимальный веб-интерфейс
-- ✅ Отображение статусов заказов
+1. **Проблема:** Сервисы перезапускаются или не запускаются
+   **Решение:** Проверьте логи сервисов:
+   ```
+   docker-compose logs [service-name]
+   ```
+
+2. **Проблема:** Ошибки подключения между сервисами
+   **Решение:** Убедитесь, что RabbitMQ запущен и контейнеры могут взаимодействовать в сети:
+   ```
+   docker-compose logs rabbitmq
+   ```
+
+3. **Проблема:** Фронтенд не может подключиться к бэкенду
+   **Решение:** Проверьте логи API Gateway:
+   ```
+   docker-compose logs api-gateway
+   ```
+
+4. **Для полной перезагрузки системы:**
+   ```
+   docker-compose down
+   docker system prune -f
+   docker-compose build --no-cache
+   docker-compose up -d
+   ```
+
+## Архитектура приложения
+
+Приложение состоит из следующих компонентов:
+- Frontend Service: Пользовательский интерфейс
+- API Gateway: Маршрутизация запросов
+- Orders Microservice: Управление заказами
+- Payments Microservice: Обработка платежей
+- RabbitMQ: Обмен сообщениями между микросервисами
+

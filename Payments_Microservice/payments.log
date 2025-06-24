@@ -9,56 +9,21 @@ WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
-[INFO] --- clean:3.2.0:clean (default-clean) @ Payments_Microservice ---
-[INFO] Deleting /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/target
-[INFO] 
-[INFO] --- jacoco:0.8.11:prepare-agent (default) @ Payments_Microservice ---
-[INFO] argLine set to -javaagent:/Users/ivannovikov/.m2/repository/org/jacoco/org.jacoco.agent/0.8.11/org.jacoco.agent-0.8.11-runtime.jar=destfile=/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/target/jacoco.exec
-[INFO] 
-[INFO] --- resources:3.3.1:resources (default-resources) @ Payments_Microservice ---
-[INFO] Copying 1 resource from src/main/resources to target/classes
-[INFO] 
-[INFO] --- compiler:3.13.0:compile (default-compile) @ Payments_Microservice ---
-[INFO] Recompiling the module because of changed source code.
-[INFO] Compiling 14 source files with javac [debug target 11] to target/classes
-[WARNING] location of system modules is not set in conjunction with -source 11
-  not setting the location of system modules may lead to class files that cannot run on JDK 11
-    --release 11 is recommended instead of -source 11 -target 11 because it sets the location of system modules automatically
-[INFO] /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/src/main/java/com/example/controller/AccountController.java: /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/src/main/java/com/example/controller/AccountController.java uses unchecked or unsafe operations.
-[INFO] /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Payments_Microservice/src/main/java/com/example/controller/AccountController.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
 [INFO] --- exec:3.5.1:java (default-cli) @ Payments_Microservice ---
 Payments microservice is starting on port 8082
 Declaring queue for receiving: payment_requests
  [*] Waiting for messages from queue 'payment_requests'
 Started consuming messages from queue: payment_requests
 Started listening for payment requests on queue: payment_requests
-[Thread-2] INFO org.eclipse.jetty.util.log - Logging initialized @2382ms to org.eclipse.jetty.util.log.Slf4jLog
+[Thread-2] INFO org.eclipse.jetty.util.log - Logging initialized @1921ms to org.eclipse.jetty.util.log.Slf4jLog
 [Thread-2] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - == Spark has ignited ...
 [Thread-2] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - >> Listening on 0.0.0.0:8082
 [Thread-2] INFO org.eclipse.jetty.server.Server - jetty-9.4.48.v20220622; built: 2022-06-21T20:42:25.880Z; git: 6b67c5719d1f4371b33655ff2d047d24e171e49a; jvm 24.0.1
 [Thread-2] INFO org.eclipse.jetty.server.session - DefaultSessionIdManager workerName=node0
 [Thread-2] INFO org.eclipse.jetty.server.session - No SessionScavenger set, using defaults
 [Thread-2] INFO org.eclipse.jetty.server.session - node0 Scavenging every 660000ms
-[Thread-2] ERROR spark.Spark - ignite failed
-java.io.IOException: Failed to bind to /0.0.0.0:8082
-	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:349)
-	at org.eclipse.jetty.server.ServerConnector.open(ServerConnector.java:310)
-	at org.eclipse.jetty.server.AbstractRabbitMQ connection closed
-stractNetworkConnector.java:80)
-	at org.eclipse.jetty.server.ServerConnector.doStart(ServerConnector.java:234)
-	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
-	at org.eclipse.jetty.server.Server.doStart(Server.java:401)
-	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
-	at spark.embeddedserver.jetty.EmbeddedJettyServer.ignite(EmbeddedJettyServer.java:154)
-	at spark.Service.lambda$init$2(Service.java:633)
-	at java.base/java.lang.Thread.run(Thread.java:1447)
-Caused by: java.net.BindException: Address already in use
-	at java.base/sun.nio.ch.Net.bind0(Native Method)
-	at java.base/sun.nio.ch.Net.bind(Net.java:511)
-	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(ServerSocketChannelImpl.java:335)
-	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:297)
-	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:80)
-	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:344)
-	... 9 more
+[Thread-2] INFO org.eclipse.jetty.server.AbstractConnector - Started ServerConnector@31f9aee2{HTTP/1.1, (http/1.1)}{0.0.0.0:8082}
+[Thread-2] INFO org.eclipse.jetty.server.Server - Started @1992ms
+Payments microservice is ready at http://localhost:8082/docs
+Payments microservice started successfully
 RabbitMQ connection closed

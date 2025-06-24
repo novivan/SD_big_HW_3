@@ -22,8 +22,10 @@ import static spark.Spark.post;
  */
 public class App 
 {
-    private static final String PAYMENTS_SERVICE_URL = "http://localhost:8082";
-    private static final String ORDERS_SERVICE_URL = "http://localhost:8081";
+    private static final String PAYMENTS_SERVICE_URL = System.getenv("PAYMENTS_SERVICE_URL") != null ?
+            System.getenv("PAYMENTS_SERVICE_URL") : "http://localhost:8082";
+    private static final String ORDERS_SERVICE_URL = System.getenv("ORDERS_SERVICE_URL") != null ?
+            System.getenv("ORDERS_SERVICE_URL") : "http://localhost:8081";
     private static final HttpClient httpClient = HttpClient.newHttpClient();
 
     public static void main( String[] args )
@@ -243,6 +245,12 @@ public class App
         get("/swagger", (req, res) -> {
             res.redirect("/docs");
             return null;
+        });
+
+        // Add a health endpoint
+        get("/api/health", (req, res) -> {
+            res.type("application/json");
+            return "{\"status\":\"UP\",\"timestamp\":" + System.currentTimeMillis() + "}";
         });
 
         // 404 handler

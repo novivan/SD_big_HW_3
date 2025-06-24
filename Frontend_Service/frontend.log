@@ -13,7 +13,7 @@ WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
 [WARNING] 1 problem was encountered while building the effective model for org.javassist:javassist:jar:3.20.0-GA during dependency collection step for project (use -X to see details)
 [INFO] 
 [INFO] --- jacoco:0.8.11:prepare-agent (default) @ Frontend_Service ---
-[INFO] argLine set to -javaagent:/Users/ivannovikov/.m2/repository/org/jacoco/org.jacoco.agent/0.8.11/org.jacoco.agent-0.8.11-runtime.jar=destfile=/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Frontend_Service/target/jacoco.exec
+[INFO] argLine set to -javaagent:/Users/ivannovikov/.m2/repository/org/jacoco/org.jacoco.agent/0.8.11/org.jacoco.agent-0.8.11-runtime.jar=destfile=/Users/ivannovikov/Desktop/SD_big_HW_3/Frontend_Service/target/jacoco.exec
 [INFO] 
 [INFO] --- resources:3.2.0:resources (default-resources) @ Frontend_Service ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
@@ -27,7 +27,7 @@ WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
 [INFO] --- resources:3.2.0:testResources (default-testResources) @ Frontend_Service ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
 [INFO] Using 'UTF-8' encoding to copy filtered properties files.
-[INFO] skip non existing resourceDirectory /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Frontend_Service/src/test/resources
+[INFO] skip non existing resourceDirectory /Users/ivannovikov/Desktop/SD_big_HW_3/Frontend_Service/src/test/resources
 [INFO] 
 [INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ Frontend_Service ---
 [INFO] Nothing to compile - all classes are up to date
@@ -46,27 +46,39 @@ WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
  =========|_|==============|___/=/_/_/_/
 [32m :: Spring Boot :: [39m              [2m (v2.7.0)[0;39m
 
-[2m2025-06-15 17:49:25.418[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m Starting FrontendApplication using Java 24.0.1 on Ivans-MacBook-Pro.local with PID 51479 (/Users/ivannovikov/Desktop/SD/SD_big_HW_3/Frontend_Service/target/classes started by ivannovikov in /Users/ivannovikov/Desktop/SD/SD_big_HW_3/Frontend_Service)
-[2m2025-06-15 17:49:25.420[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
+[2m2025-06-24 15:41:50.427[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m Starting FrontendApplication using Java 24.0.1 on Ivans-MacBook-Pro.local with PID 76578 (/Users/ivannovikov/Desktop/SD_big_HW_3/Frontend_Service/target/classes started by ivannovikov in /Users/ivannovikov/Desktop/SD_big_HW_3/Frontend_Service)
+[2m2025-06-24 15:41:50.428[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
 WARNING: A restricted method in java.lang.System has been called
 WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (file:/Users/ivannovikov/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/9.0.63/tomcat-embed-core-9.0.63.jar)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
-[2m2025-06-15 17:49:25.820[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8083 (http)
-[2m2025-06-15 17:49:25.825[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
-[2m2025-06-15 17:49:25.825[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.apache.catalina.core.StandardEngine [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/9.0.63]
-[2m2025-06-15 17:49:25.874[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
-[2m2025-06-15 17:49:25.874[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 429 ms
-[2m2025-06-15 17:49:26.001[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.a.w.s.WelcomePageHandlerMapping   [0;39m [2m:[0;39m Adding welcome page template: index
-[2m2025-06-15 17:49:26.040[0;39m [33m WARN[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.thymeleaf.templatemode.TemplateMode [0;39m [2m:[0;39m [THYMELEAF][main] Unknown Template Mode 'HTML '. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS', 'RAW'. Using default Template Mode 'HTML'.
-[2m2025-06-15 17:49:26.062[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8083 (http) with context path ''
-[2m2025-06-15 17:49:26.062[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m Starting...
-[2m2025-06-15 17:49:26.062[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@5793b87]]
-[2m2025-06-15 17:49:26.062[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m Started.
-[2m2025-06-15 17:49:26.066[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m Started FrontendApplication in 0.797 seconds (JVM running for 0.931)
-[2m2025-06-15 17:50:25.951[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[MessageBroker-1][0;39m [36mo.s.w.s.c.WebSocketMessageBrokerStats   [0;39m [2m:[0;39m WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
-[2m2025-06-15 17:53:37.666[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[nio-8083-exec-2][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring DispatcherServlet 'dispatcherServlet'
-[2m2025-06-15 17:53:37.666[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[nio-8083-exec-2][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Initializing Servlet 'dispatcherServlet'
-[2m2025-06-15 17:53:37.667[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[nio-8083-exec-2][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Completed initialization in 0 ms
-[2m2025-06-15 18:20:25.970[0;39m [32m INFO[0;39m [35m51479[0;39m [2m---[0;39m [2m[MessageBroker-1][0;39m [36mo.s.w.s.c.WebSocketMessageBrokerStats   [0;39m [2m:[0;39m WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 2, active threads = 1, queued tasks = 0, completed tasks = 1]
+[2m2025-06-24 15:41:50.804[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8083 (http)
+[2m2025-06-24 15:41:50.808[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
+[2m2025-06-24 15:41:50.808[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.apache.catalina.core.StandardEngine [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/9.0.63]
+[2m2025-06-24 15:41:50.847[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
+[2m2025-06-24 15:41:50.847[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 397 ms
+[2m2025-06-24 15:41:50.954[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.a.w.s.WelcomePageHandlerMapping   [0;39m [2m:[0;39m Adding welcome page template: index
+[2m2025-06-24 15:41:50.990[0;39m [33m WARN[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.thymeleaf.templatemode.TemplateMode [0;39m [2m:[0;39m [THYMELEAF][main] Unknown Template Mode 'HTML '. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS', 'RAW'. Using default Template Mode 'HTML'.
+[2m2025-06-24 15:41:51.010[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8083 (http) with context path ''
+[2m2025-06-24 15:41:51.011[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m Starting...
+[2m2025-06-24 15:41:51.011[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@617389a]]
+[2m2025-06-24 15:41:51.011[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.m.s.b.SimpleBrokerMessageHandler    [0;39m [2m:[0;39m Started.
+[2m2025-06-24 15:41:51.015[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.example.frontend.FrontendApplication  [0;39m [2m:[0;39m Started FrontendApplication in 0.72 seconds (JVM running for 0.845)
+[2m2025-06-24 15:42:19.612[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[nio-8083-exec-1][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2m2025-06-24 15:42:19.612[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[nio-8083-exec-1][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Initializing Servlet 'dispatcherServlet'
+[2m2025-06-24 15:42:19.613[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[nio-8083-exec-1][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Completed initialization in 1 ms
+[2m2025-06-24 15:42:50.912[0;39m [32m INFO[0;39m [35m76578[0;39m [2m---[0;39m [2m[MessageBroker-1][0;39m [36mo.s.w.s.c.WebSocketMessageBrokerStats   [0;39m [2m:[0;39m WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:06 min
+[INFO] Finished at: 2025-06-24T15:42:56+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:2.7.0:run (default-cli) on project Frontend_Service: Application finished with exit code: 137 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
