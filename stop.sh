@@ -25,6 +25,7 @@ stop_service() {
 stop_service "API Gateway" 8080
 stop_service "Orders Microservice" 8081
 stop_service "Payments Microservice" 8082
+stop_service "Ftontend Microservice" 8083
 
 echo "All microservices stopped successfully."
 

@@ -1,0 +1,23 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/opt/homebrew/Cellar/maven/3.9.10/libexec/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------------< com.example:API_Gateway >-----------------------
+[INFO] Building API_Gateway 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec:3.5.1:java (default-cli) @ API_Gateway ---
+API Gateway is starting on port 8080
+[Thread-2] INFO org.eclipse.jetty.util.log - Logging initialized @1668ms to org.eclipse.jetty.util.log.Slf4jLog
+[Thread-2] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - == Spark has ignited ...
+[Thread-2] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - >> Listening on 0.0.0.0:8080
+[Thread-2] INFO org.eclipse.jetty.server.Server - jetty-9.4.48.v20220622; built: 2022-06-21T20:42:25.880Z; git: 6b67c5719d1f4371b33655ff2d047d24e171e49a; jvm 24.0.1
+[Thread-2] INFO org.eclipse.jetty.server.session - DefaultSessionIdManager workerName=node0
+[Thread-2] INFO org.eclipse.jetty.server.session - No SessionScavenger set, using defaults
+[Thread-2] INFO org.eclipse.jetty.server.session - node0 Scavenging every 600000ms
+[Thread-2] INFO org.eclipse.jetty.server.AbstractConnector - Started ServerConnector@7b8c0614{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+[Thread-2] INFO org.eclipse.jetty.server.Server - Started @1746ms
+API Gateway is ready at http://localhost:8080/docs
